@@ -10,7 +10,7 @@
 
 	var _settings = {
 
-		// Full screen header
+		    // Full screen header
 			useFullScreenHeader: true,
 
 		// Parallax Background
