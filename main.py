@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 import os
+import base64
 import urllib
 
 from google.appengine.api import users
@@ -50,7 +51,19 @@ class NextPage(webapp2.RequestHandler):
         template = JINJA_ENVIRONMENT.get_template('index.html')
         self.response.write(template.render(template_values))
 
+class VerifyHandler(webapp2.RequestHandler):
+
+    def get(self, uuid):
+	template = JINJA_ENVIRONMENT.get_template('index.html')
+	self.response.write(template.render({'firstname': uuid, 'lastname': self.request.get('q', 'nothing')}))
+
+   def post(self, uuid):
+	x = self.request.post('email')
+	y = self.request.post('password')
+	encryptpass = base64.b64encode(y)
+
 app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/next', NextPage),
+    (r'/verify/(.*)$', VerifyHandler),
 ], debug=True)
