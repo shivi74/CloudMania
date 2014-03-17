@@ -57,11 +57,6 @@ class VerifyHandler(webapp2.RequestHandler):
 	template = JINJA_ENVIRONMENT.get_template('index.html')
 	self.response.write(template.render({'firstname': uuid, 'lastname': self.request.get('q', 'nothing')}))
 
-   def post(self, uuid):
-	x = self.request.post('email')
-	y = self.request.post('password')
-	encryptpass = base64.b64encode(y)
-
 app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/next', NextPage),
