@@ -32,7 +32,7 @@ class MainPage(webapp2.RequestHandler):
 
     def get(self):
         template_values = {
-            'firstname': 'Love',
+            'firstname': 'Shivani',
             'lastname': 'Sharma'
         }
 
@@ -43,7 +43,7 @@ class NextPage(webapp2.RequestHandler):
 
     def get(self):
         template_values = {
-            'firstname': 'Shivani',
+            'firstname': 'Love',
             'lastname': 'Sharma'
         }
 
