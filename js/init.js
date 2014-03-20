@@ -20,7 +20,7 @@
 
 		// skelJS
 			skelJS: {
-				prefix: 'css/style',
+				prefix: '/css/style',
 				resetCSS: true,
 				boxModel: 'border',
 				useOrientation: true,
