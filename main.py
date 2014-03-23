@@ -1,51 +1,54 @@
-#!/usr/bin/env python
-#
-# Copyright 2007 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
+import cgi
+import webapp2
+import jinja2
+import re
 import os
 import base64
 import urllib
 
 from google.appengine.api import users
-from google.appengine.ext import ndb
-
-import jinja2
-import webapp2
+from google.appengine.ext import db
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
+class User(db.Model):
+  email = db.StringProperty(required = True)
+  password = db.StringProperty(required = True)
+  
+EMAIL_RE = re.compile(r"^[\S]+@[\S]+\.[\S]+$")
+def valid_email(email):
+    return EMAIL_RE.match(email)
+	
 class MainPage(webapp2.RequestHandler):
+  def get(self):
+    template_values = {"email":"","email_error":"","password":"","confirm password":""}
+    template = jinja_environment.get_template('index.html')
+    self.response.out.write(template.render(template_values))
 
-    def get(self):
-        template_values = {
-            'firstname': 'Shivani',
-            'lastname': 'Sharma'
-        }
-
-        template = JINJA_ENVIRONMENT.get_template('index.html')
-        self.response.write(template.render(template_values))
+  def post(self):
+	user_email = self.request.get('email')
+	user_password = self.request.get('password')
+	user_cpassword = self.request.get('confirm password')	
+	geted_email_error = ""
+	if (user_email and valid_email(user_email)) and (user_password and user_cpassword):
+		a = User(email = user_email,
+				password = base64.b64encode('user_password'))
+		a.put()
+	else
+        geted_email_error = "e-mail is not valid!"
+	template_values = {"email": user_email,"email_error": geted_email_error}
+    template = jinja_environment.get_template('index.html')
+    self.response.out.write(template.render(template_values))
+	self.redirect('/next')
 
 class NextPage(webapp2.RequestHandler):
 
     def get(self):
         template_values = {
-            'firstname': 'Love',
-            'lastname': 'Sharma'
+            
         }
 
         template = JINJA_ENVIRONMENT.get_template('index.html')
