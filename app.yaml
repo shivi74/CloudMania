@@ -2,7 +2,7 @@ application: cloud-mania
 version: 1
 runtime: python27
 api_version: 1
-threadsafe: yes
+threadsafe: true
 
 handlers:
 - url: /favicon\.ico
@@ -18,7 +18,7 @@ handlers:
 - url: /images
   static_dir: images
 
-- url: .*
+- url: /.*
   script: main.app
 
 libraries:
