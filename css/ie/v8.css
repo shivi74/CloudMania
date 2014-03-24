@@ -1,57 +1,81 @@
-/*
-	Overflow 1.1 by HTML5 UP
-	html5up.net | @n33co
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
-*/
-
 /*********************************************************************************/
 /* Basic                                                                         */
 /*********************************************************************************/
 
-	body
-	{
-		-ms-behavior: url('css/ie/backgroundsize.min.htc');
-	}
-
-	.button
-	{
+	.button, input, select, textarea {
 		position: relative;
 		-ms-behavior: url('css/ie/PIE.htc');
 	}
 	
-		.button.style3
-		{
-			background: #fefefe;
-			border: solid 1px #dad9d9;
-		}
-
-/*********************************************************************************/
-/* Footer                                                                        */
-/*********************************************************************************/
-
-	#footer
-	{
+	input, select, textarea {
+		border: solid 1px #ccc;
 	}
 
-		#footer .icons
-		{
-			position: relative;
-			-ms-behavior: url('css/ie/PIE.htc');
-		}
+	/* Buttons */
 		
+		.button {
+		}
+
+			.button.down {
+				text-indent: 0;
+			}
+	
 /*********************************************************************************/
-/* Header                                                                        */
+/* Intro                                                                         */
 /*********************************************************************************/
 
-	#header
-	{
+	#intro {
+		-ms-behavior: url('css/ie/backgroundsize.min.htc');
+		background: url('../../images/intro.jpg');
+		background-size: cover;
 	}
 	
-		#header header
-		{
+		#intro:before {
+			content: '';
+			background: url('../images/overlay.png');
+			width: 100%;
+			height: 100%;
+			position: absolute;
+			left: 0;
+			top: 0;
 		}
 
-			#header header p
-			{
-				border-top: solid 1px #888;
-			}
+/*********************************************************************************/
+/* One                                                                           */
+/*********************************************************************************/
+
+	#one {
+		-ms-behavior: url('css/ie/backgroundsize.min.htc');
+		background: url('../../images/one.jpg');
+		background-size: cover;
+	}
+
+		#one:before {
+			content: '';
+			background: url('../images/overlay.png');
+			width: 100%;
+			height: 100%;
+			position: absolute;
+			left: 0;
+			top: 0;
+		}
+
+/*********************************************************************************/
+/* Two                                                                           */
+/*********************************************************************************/
+
+	#two {
+		-ms-behavior: url('css/ie/backgroundsize.min.htc');
+		background: url('../../images/two.jpg');
+		background-size: cover;
+	}
+
+		#two:before {
+			content: '';
+			background: url('../images/overlay.png');
+			width: 100%;
+			height: 100%;
+			position: absolute;
+			left: 0;
+			top: 0;
+		}

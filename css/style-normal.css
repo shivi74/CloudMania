@@ -1,15 +1,7 @@
-/*
-	Overflow 1.1 by HTML5 UP
-	html5up.net | @n33co
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
-*/
-
 /*********************************************************************************/
-/* Banner                                                                        */
+/* Basic                                                                         */
 /*********************************************************************************/
 
-	#banner
-	{
-		padding: 4em 0 4em 0;
-		background-size: 175% auto;
+	body,input,textarea,select {
+		font-size: 15pt;
 	}
