@@ -32,7 +32,7 @@ def valid_email(email):
 class MainPage(webapp2.RequestHandler):
   def get(self):
     template_values = {"email":"","email_error":"","password":"","confirm password":""}
-    template = jinja_environment.get_template('index.html')
+    template = JINJA_ENVIRONMENT.get_template('index.html')
     self.response.out.write(template.render(template_values))
 
   def post(self):
@@ -46,11 +46,11 @@ class MainPage(webapp2.RequestHandler):
 				password = base64.b64encode('user_password'),
 				creation = user_creation)
 		a.put()
-	else
-        geted_email_error = "e-mail is not valid!"
-	template_values = {"email": user_email,"email_error": geted_email_error}
-    template = jinja_environment.get_template('index.html')
-    self.response.out.write(template.render(template_values))
+	else:
+          geted_email_error = "e-mail is not valid!"
+	  template_values = {"email": user_email,"email_error": geted_email_error}
+        template = jinja_environment.get_template('index.html')
+        self.response.out.write(template.render(template_values))
 	self.redirect('/next')
 
 class NextPage(webapp2.RequestHandler):
