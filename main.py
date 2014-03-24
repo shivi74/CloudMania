@@ -25,7 +25,7 @@ def valid_email(email):
 class MainPage(webapp2.RequestHandler):
   def get(self):
     template_values = {"email":"","email_error":"","password":"","confirm password":""}
-    template = jinja_environment.get_template('index.html')
+    template = JINJA_ENVIRONMENT.get_template('index.html')
     self.response.out.write(template.render(template_values))
 
   def post(self):
