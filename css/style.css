@@ -58,11 +58,11 @@
 	a {
 		color: #98c593;
 
-		-moz-transition: all 0.2s ease-in-out, color 0.2s ease-in-out;
-		-webkit-transition: all 0.2s ease-in-out, color 0.2s ease-in-out;
-		-o-transition: all 0.2s ease-in-out, color 0.2s ease-in-out;
-		-ms-transition: all 0.2s ease-in-out, color 0.2s ease-in-out;
-		transition: all 0.2s ease-in-out, color 0.2s ease-in-out;
+		-moz-transition: all 0.1s ease-in-out, color 0.1s ease-in-out;
+		-webkit-transition: all 0.1s ease-in-out, color 0.1s ease-in-out;
+		-o-transition: all 0.1s ease-in-out, color 0.1s ease-in-out;
+		-ms-transition: all 0.1s ease-in-out, color 0.1s ease-in-out;
+		transition: all 0.1s ease-in-out, color 0.1s ease-in-out;
 	}
 
 	sub {
@@ -281,11 +281,11 @@
 				-ms-appearance: none;
 				appearance: none;
 
-				-moz-transition: all 0.2s ease-in-out, color 0.2s ease-in-out;
-				-webkit-transition: all 0.2s ease-in-out, color 0.2s ease-in-out;
-				-o-transition: all 0.2s ease-in-out, color 0.2s ease-in-out;
-				-ms-transition: all 0.2s ease-in-out, color 0.2s ease-in-out;
-				transition: all 0.2s ease-in-out, color 0.2s ease-in-out;
+				-moz-transition: all 0.1s ease-in-out, color 0.1s ease-in-out;
+				-webkit-transition: all 0.1s ease-in-out, color 0.1s ease-in-out;
+				-o-transition: all 0.1s ease-in-out, color 0.1s ease-in-out;
+				-ms-transition: all 0.1s ease-in-out, color 0.1s ease-in-out;
+				transition: all 0.1s ease-in-out, color 0.1s ease-in-out;
 			}
 
 				form input[type="text"]:hover,
@@ -394,11 +394,11 @@
 			-ms-appearance: none;
 			appearance: none;
 
-			-moz-transition: all 0.2s ease-in-out;
-			-webkit-transition: all 0.2s ease-in-out;
-			-o-transition: all 0.2s ease-in-out;
-			-ms-transition: all 0.2s ease-in-out;
-			transition: all 0.2s ease-in-out;
+			-moz-transition: all 0.1s ease-in-out;
+			-webkit-transition: all 0.1s ease-in-out;
+			-o-transition: all 0.1s ease-in-out;
+			-ms-transition: all 0.1s ease-in-out;
+			transition: all 0.1s ease-in-out;
 		}
 
 			.button.down {
@@ -482,11 +482,11 @@
 				.main.style1 .content {
 					opacity: 1.0;
 
-					-moz-transition: all 1s ease;
-					-webkit-transition: all 1s ease;
-					-o-transition: all 1s ease;
-					-ms-transition: all 1s ease;
-					transition: all 1s ease;
+					-moz-transition: all 0.5s ease;
+					-webkit-transition: all 0.5s ease;
+					-o-transition: all 0.5s ease;
+					-ms-transition: all 0.5s ease;
+					transition: all 0.5s ease;
 					
 					-moz-transform: translateZ(0);
 					-webkit-transform: translateZ(0);
@@ -511,11 +511,11 @@
 					position: relative;
 					width: 35%;
 
-					-moz-transition: all 1s ease;
-					-webkit-transition: all 1s ease;
-					-o-transition: all 1s ease;
-					-ms-transition: all 1s ease;
-					transition: all 1s ease;
+					-moz-transition: all 0.5s ease;
+					-webkit-transition: all 0.5s ease;
+					-o-transition: all 0.5s ease;
+					-ms-transition: all 0.5s ease;
+					transition: all 0.5s ease;
 					
 					-moz-transform: translateZ(0);
 					-webkit-transform: translateZ(0);
@@ -1131,11 +1131,11 @@
 				left: 0;
 				opacity: 1.0;
 			
-				-moz-transition: all 1s ease;
-				-webkit-transition: all 1s ease;
-				-o-transition: all 1s ease;
-				-ms-transition: all 1s ease;
-				transition: all 1s ease;
+				-moz-transition: all 0.5s ease;
+				-webkit-transition: all 0.5s ease;
+				-o-transition: all 0.5s ease;
+				-ms-transition: all 0.5s ease;
+				transition: all 0.5s ease;
 				
 				-moz-transform: translateZ(0);
 				-webkit-transform: translateZ(0);
@@ -1172,11 +1172,11 @@
 			position: relative;
 			bottom: 0;
 			
-			-moz-transition: all 1s ease;
-			-webkit-transition: all 1s ease;
-			-o-transition: all 1s ease;
-			-ms-transition: all 1s ease;
-			transition: all 1s ease;
+			-moz-transition: all 0.5s ease;
+			-webkit-transition: all 0.5s ease;
+			-o-transition: all 0.5s ease;
+			-ms-transition: all 0.5s ease;
+			transition: all 0.5s ease;
 			
 			-moz-transform: translateZ(0);
 			-webkit-transform: translateZ(0);
