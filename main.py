@@ -5,6 +5,7 @@ import re
 import os
 import base64
 import urllib
+import datetime
 
 from google.appengine.api import users
 from google.appengine.ext import db
@@ -17,7 +18,13 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 class User(db.Model):
   email = db.StringProperty(required = True)
   password = db.StringProperty(required = True)
+  creation = db.DateTimeProperty(auto_now_add=True)
   
+class Verify(db.model):
+  email = db.StringProperty(required = True)
+  uuid = db.StringProperty(required = True)
+  is_viewed = db.BoolenProperty()
+
 EMAIL_RE = re.compile(r"^[\S]+@[\S]+\.[\S]+$")
 def valid_email(email):
     return EMAIL_RE.match(email)
@@ -32,10 +39,12 @@ class MainPage(webapp2.RequestHandler):
 	user_email = self.request.get('email')
 	user_password = self.request.get('password')
 	user_cpassword = self.request.get('confirm password')	
+	user_creation = self.request.get('creation')
 	geted_email_error = ""
 	if (user_email and valid_email(user_email)) and (user_password and user_cpassword):
 		a = User(email = user_email,
-				password = base64.b64encode('user_password'))
+				password = base64.b64encode('user_password'),
+				creation = user_creation)
 		a.put()
 	else:
           geted_email_error = "e-mail is not valid!"
