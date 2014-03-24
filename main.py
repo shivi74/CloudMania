@@ -19,11 +19,6 @@ class User(db.Model):
   email = db.StringProperty(required = True)
   password = db.StringProperty(required = True)
   creation = db.DateTimeProperty(auto_now_add=True)
-  
-class Verify(db.model):
-  email = db.StringProperty(required = True)
-  uuid = db.StringProperty(required = True)
-  is_viewed = db.BoolenProperty()
 
 EMAIL_RE = re.compile(r"^[\S]+@[\S]+\.[\S]+$")
 def valid_email(email):
