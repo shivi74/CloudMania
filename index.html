@@ -6,7 +6,7 @@
 -->
 <html>
 	<head>
-		<title>Overflow by HTML5 UP</title>
+		<title>Cloud Mania</title>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="description" content="" />
 		<meta name="keywords" content="" />
@@ -27,26 +27,41 @@
 		<!-- Header -->
 			<section id="header">
 				<header>
-					<h1>Overflow</h1>
-					<p>By HTML5 UP</p>
+					<h1>Cloud Mania</h1>
+					<p>Eaisest way to create website ever.</p>
 				</header>
 				<footer>
-					<a href="#banner" class="button style2 scrolly scrolly-centered">Proceed as anticipated</a>
+					<a href="#banner" class="button style2 scrolly scrolly-centered">Try it now</a>
 				</footer>
 			</section>
 		
 		<!-- Banner -->
-			<section id="banner">
+    <section id="banner">
+	      {% if not user %}
 				<header>
-					<h2>This is Overflow</h2>
+					<h2 id="register-header">Don't have an account? Sign Up Below</h2>
 				</header>
-				<p>A brand new site template designed by <a href="http://n33.co">AJ</a> for <a href="http://html5up.net/">HTML5 UP</a>.<br />
-				It’s fully responsive, built on <a href="http://skeljs.org">skelJS</a>, and of course entirely free<br />
-				under the <a href="http://html5up.net/license/">Creative Commons license</a>.</p>
-				<footer>
-					<a href="#first" class="button style2 scrolly">Act on this message</a>
-				</footer>
-			</section>
+        {% endif %}
+        {% if errors %}
+        	{{ errors|safe }}
+        {% endif %}
+        {% if not user %}
+        <form action="/register#banner" method="post">
+          <div><input type="text" class="text" name="email" placeholder="Email"></div>
+          <div><input type="password" class="text" name="password" placeholder="Password"></div>
+          <div><input type="password" class="text" name="confirmpassword" placeholder="Confirm Password"></div>
+          <input type="submit" class="button style2" value="Register" name="register" />
+          <input type="button" class="button style2" value="Already Registered?" name="login" />
+        </form>
+        {% else %}
+        	<h2>Welcome, {{user}}</h2>
+        {% endif %}
+        {% if login %}
+        <script>
+        	alreadyRegistered();
+        </script>
+        {% endif %}
+      </section>
 		
 		<!-- Feature 1 -->
 			<article id="first" class="container box style1 right">

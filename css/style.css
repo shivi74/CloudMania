@@ -687,6 +687,15 @@
 					text-align: center;
 				}
 
+/***Custom***/
+
+#banner > form > div {
+  width: 50%;
+  margin-left: 25%;
+  margin-top: 15px;
+}
+
+
 /*********************************************************************************/
 /* Icons                                                                         */
 /* Powered by Font Awesome by Dave Gandy | http://fontawesome.io                 */
@@ -1216,6 +1225,9 @@
 		{
 			color: #35b882;
 			text-shadow: 0 0 0.5px rgba(53,184,130,0.25);
+      width: 20%;
+      display: inline-block;
+      margin: 20px;
 		}
 
 		#banner header
