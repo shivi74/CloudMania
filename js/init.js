@@ -10,7 +10,7 @@
 
 	var _settings = {
 
-		    // Full screen header
+		// Full screen header
 			useFullScreenHeader: true,
 
 		// Parallax Background
@@ -20,7 +20,7 @@
 
 		// skelJS
 			skelJS: {
-				prefix: '/css/style',
+				prefix: 'css/style',
 				resetCSS: true,
 				boxModel: 'border',
 				useOrientation: true,
