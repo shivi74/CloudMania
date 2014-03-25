@@ -20,11 +20,14 @@ class User(db.Model):
   email = db.StringProperty(required = True)
   password = db.StringProperty(required = True)
   creation = db.DateTimeProperty(auto_now_add=True)
+<<<<<<< HEAD
   
 class Verify(db.model):
   email = db.StringProperty(required = True)
   uuid = db.StringProperty(required = True)
   is_verify = db.BoolenProperty()
+=======
+>>>>>>> 75826d841df372c779efd73ff4e4bdf05e9cd752
 
 class Forgot(db.model):
   email = db.StringProperty(required = True)
