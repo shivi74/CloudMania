@@ -1,3 +1,4 @@
+import uuid
 import cgi
 import webapp2
 import jinja2
@@ -23,8 +24,13 @@ class User(db.Model):
 class Verify(db.model):
   email = db.StringProperty(required = True)
   uuid = db.StringProperty(required = True)
-  is_viewed = db.BoolenProperty()
+  is_verify = db.BoolenProperty()
 
+class Forgot(db.model):
+  email = db.StringProperty(required = True)
+  is_viewed = db.BoplenPropery()
+  password = db.TextProperty()
+  
 EMAIL_RE = re.compile(r"^[\S]+@[\S]+\.[\S]+$")
 def valid_email(email):
     return EMAIL_RE.match(email)
@@ -51,23 +57,30 @@ class MainPage(webapp2.RequestHandler):
 	  template_values = {"email": user_email,"email_error": geted_email_error}
         template = jinja_environment.get_template('index.html')
         self.response.out.write(template.render(template_values))
-	self.redirect('/next')
+	self.redirect('/vefiry')
 
 class NextPage(webapp2.RequestHandler):
 
     def get(self):
-        template_values = {
-            
-        }
-
-        template = JINJA_ENVIRONMENT.get_template('index.html')
+        
+		template = JINJA_ENVIRONMENT.get_template('index.html')
         self.response.write(template.render(template_values))
-
+		
+	def post(self)
+		user_email = self.request.get('email')
+		user_uuid = uuid.uuid4(user_email)
+		
 class VerifyHandler(webapp2.RequestHandler):
 
     def get(self, uuid):
+	template_values = {"email":"","uuid":"","is_verify":""}
 	template = JINJA_ENVIRONMENT.get_template('index.html')
 	self.response.write(template.render({'firstname': uuid, 'lastname': self.request.get('q', 'nothing')}))
+	
+	def post(self)
+		user_email = self.request.get('email')
+		user_uuid = uuid.UUID(user_email)
+		
 
 app = webapp2.WSGIApplication([
     ('/', MainPage),
