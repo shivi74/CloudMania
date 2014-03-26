@@ -10,7 +10,7 @@
 
 	var _settings = {
 
-		    // Full screen header
+		// Full screen header
 			useFullScreenHeader: true,
 
 		// Parallax Background
@@ -20,7 +20,7 @@
 
 		// skelJS
 			skelJS: {
-				prefix: '/css/style',
+				prefix: 'css/style',
 				resetCSS: true,
 				boxModel: 'border',
 				useOrientation: true,
@@ -176,3 +176,30 @@
 				$('.gallery').poptrox(_settings.poptrox);
 
 		});
+
+
+// **** Custom **** /
+
+
+function alreadyRegistered() {
+	var form = document.forms[0];
+  form.elements['confirmpassword'].style.display = 'none';
+	var header = document.getElementById('register-header');
+	header.innerText = 'Login here';
+  form.elements['register'].value = 'Login';
+  form.elements['login'].style.display = 'none';
+  form.action = "/login#banner";
+}
+
+
+function executeall(){
+	var form = document.forms[0];
+  form.elements['login'].addEventListener('click', alreadyRegistered);
+}
+
+window.addEventListener('load', function(){
+executeall();
+                        });
+
+
+

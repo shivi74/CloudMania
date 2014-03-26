@@ -1,4 +1,4 @@
-﻿<!DOCTYPE HTML>
+<!DOCTYPE HTML>
 <!--
 	Overflow 1.1 by HTML5 UP
 	html5up.net | @n33co
@@ -6,48 +6,62 @@
 -->
 <html>
 	<head>
-		<title>CloudMania</title>
+		<title>Cloud Mania</title>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="description" content="" />
 		<meta name="keywords" content="" />
 		<link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,300italic" rel="stylesheet" type="text/css" />
-		<!--[if lte IE 8]><script src="/css/ie/html5shiv.js"></script><![endif]-->
-		<script src="/js/jquery.min.js"></script>
-		<script src="/js/jquery.poptrox.min.js"></script>
-		<script src="/js/skel.min.js"></script>
-		<script src="/js/init.js"></script>
+		<!--[if lte IE 8]><script src="css/ie/html5shiv.js"></script><![endif]-->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.poptrox.min.js"></script>
+		<script src="js/skel.min.js"></script>
+		<script src="js/init.js"></script>
 		<noscript>
-			<link rel="stylesheet" href="/css/skel-noscript.css" />
-			<link rel="stylesheet" href="/css/style.css" />
+			<link rel="stylesheet" href="css/skel-noscript.css" />
+			<link rel="stylesheet" href="css/style.css" />
 		</noscript>
-		<!--[if lte IE 8]><link rel="stylesheet" href="/css/ie/v8.css" /><![endif]-->
+		<!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
 	</head>
 	<body>
 
 		<!-- Header -->
 			<section id="header">
 				<header>
-					<h1>CloudMania</h1>
-					<p>By <a href="/next">{{firstname}} {{lastname}}</a></p>
+					<h1>Cloud Mania</h1>
+					<p>Eaisest way to create website ever.</p>
 				</header>
 				<footer>
-					<a href="#banner" class="button style2 scrolly scrolly-centered">Let's get Started!!</a>
+					<a href="#banner" class="button style2 scrolly scrolly-centered">Try it now</a>
 				</footer>
 			</section>
 		
 		<!-- Banner -->
-			<section id="banner">
+    <section id="banner">
+	      {% if not user %}
 				<header>
-					<h2>This is Overflow</h2>
+					<h2 id="register-header">Don't have an account? Sign Up Below</h2>
 				</header>
-				<p>A brand new site template designed by <a href="http://n33.co">AJ</a> for <a href="http://html5up.net/">HTML5 UP</a>.<br />
-				It’s fully responsive, built on <a href="http://skeljs.org">skelJS</a>, and of course entirely free<br />
-				under the <a href="http://html5up.net/license/">Creative Commons license</a>.</p>
-				<footer>
-					<a href="#first" class="button style2 scrolly">Act on this message</a>
-				</footer>
-			</section>
-				
+        {% endif %}
+        {% if errors %}
+        	{{ errors|safe }}
+        {% endif %}
+        {% if not user %}
+        <form action="/register#banner" method="post">
+          <div><input type="text" class="text" name="email" placeholder="Email"></div>
+          <div><input type="password" class="text" name="password" placeholder="Password"></div>
+          <div><input type="password" class="text" name="confirmpassword" placeholder="Confirm Password"></div>
+          <input type="submit" class="button style2" value="Register" name="register" />
+          <input type="button" class="button style2" value="Already Registered?" name="login" />
+        </form>
+        {% else %}
+        	<h2>Welcome, {{user}}</h2>
+        {% endif %}
+        {% if login %}
+        <script>
+        	alreadyRegistered();
+        </script>
+        {% endif %}
+      </section>
 		
 		<!-- Feature 1 -->
 			<article id="first" class="container box style1 right">
