@@ -18,10 +18,13 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
+def showIndex(handler, values):
+  template = JINJA_ENVIRONMENT.get_template('index.html')
+  self.response.out.write(template.render(values))
+
 class MainPage(webapp2.RequestHandler):
   def get(self):
-    template = JINJA_ENVIRONMENT.get_template('index.html')
-    self.response.out.write(template.render({}))
+  	showIndex(self, {})
 
 class RegisterHandler(webapp2.RequestHandler):
 
@@ -54,9 +57,7 @@ class RegisterHandler(webapp2.RequestHandler):
       	errors.append("Password and Confirm password doesn't match!")
       logging.info(errors)
       template_values = {"errors": "<br/>".join(errors)}
-      template = JINJA_ENVIRONMENT.get_template('index.html')
-      self.response.out.write(template.render(template_values))
-      return
+      showIndex(template_values)
 
 
 class VerifyHandler(webapp2.RequestHandler):
@@ -82,8 +83,7 @@ class VerifyHandler(webapp2.RequestHandler):
       if(not Verify.is_verify):
         errors.append("User not Verified!")
     template_values = {"email":"","uuid":"","is_verify":""}
-    template = JINJA_ENVIRONMENT.get_template('index.html')
-    self.response.write(template.render(template_values))
+    showIndex(template_values)
 
 
 class LoginHandler(webapp2.RequestHandler):
@@ -110,8 +110,7 @@ class LoginHandler(webapp2.RequestHandler):
     if( not is_valid):
       errors.append('Wrong Username / Password!')
       template_values = {'errors': '<br/>'.join(errors), 'login': True}
-    template = JINJA_ENVIRONMENT.get_template('index.html')
-    self.response.out.write(template.render(template_values))
+    showIndex(template_values)
 
 app = webapp2.WSGIApplication([
     ('/', MainPage),
