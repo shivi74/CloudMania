@@ -90,7 +90,7 @@ class VerifyHandler(webapp2.RequestHandler):
     server.login("shivani.9487@gmail.com", "SuppermaN")
     #Send the mail
     msg = "\nHello! Click on the following link to verify: \n "
-    link = "cloudmania.in/verify/" + user_uuid
+    link = "cloudmania.in/verify/?uuid=" + user_uuid
     server.sendmail("shivani.9487@gmail.com", "user_email", msg + link)
     Verify(email=user_email, uuid=user_uuid, is_verify="false").put();
     user_uuidg = self.request.get('user_uuid')
