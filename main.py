@@ -41,8 +41,8 @@ class RegisterHandler(webapp2.RequestHandler):
     if ((user_email and utils.valid_email(user_email))
     		and (user_password == user_cpassword) and total == 0):
       database.User(
-      	email=user_email, password=base64.b64encode('user_password')).put()
-      self.redirect('/verify')
+      	email=user_email, password=base64.b64encode(user_password)).put()
+      self.redirect('/login#banner')
       return
     else:
       errors = []
@@ -57,6 +57,7 @@ class RegisterHandler(webapp2.RequestHandler):
       template = JINJA_ENVIRONMENT.get_template('index.html')
       self.response.out.write(template.render(template_values))
       return
+
 
 class VerifyHandler(webapp2.RequestHandler):
 
@@ -84,7 +85,13 @@ class VerifyHandler(webapp2.RequestHandler):
     template = JINJA_ENVIRONMENT.get_template('index.html')
     self.response.write(template.render(template_values))
 
+
 class LoginHandler(webapp2.RequestHandler):
+
+  def get(self):
+    template = JINJA_ENVIRONMENT.get_template('index.html')
+    self.response.write(template.render({'login': True}))
+
   def post(self):
     logging.info(self.request)
     user_email = self.request.get('email', '')
@@ -92,16 +99,17 @@ class LoginHandler(webapp2.RequestHandler):
     errors = []
     if (is_valid):
       user_password = self.request.get('password', '')
-      q = database.Query(User)
+      q = database.Query(database.User)
       q.filter("email =", user_email)
       record = q.fetch(1)
-      logging.info(record[0])
-      logging.info(dir(record[0]))
-      if(user_password == record[0].password):
+      logging.info(record[0].password)
+      logging.info(base64.b64encode(user_password))
+      logging.info(user_password)
+      if(base64.b64encode(user_password) == record[0].password):
         template_values = {'login': True, 'user': record[0].email}
     if( not is_valid):
       errors.append('Wrong Username / Password!')
-    template_values = {'errors': '<br/>'.join(errors), 'login': True}
+      template_values = {'errors': '<br/>'.join(errors), 'login': True}
     template = JINJA_ENVIRONMENT.get_template('index.html')
     self.response.out.write(template.render(template_values))
 
