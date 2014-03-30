@@ -102,7 +102,7 @@ class VerifyHandler(webapp2.RequestHandler):
 	errors.append("User not Verified!")
     template_values = {"email":"","uuid":"","is_verify":""}
     template = JINJA_ENVIRONMENT.get_template('index.html')
-    self.response.write(template.render({'firstname': uuid, 'lastname': self.request.get('q', 'nothing')}))
+    self.response.write(template.render(template_values))
     
 class LoginHandler(webapp2.RequestHandler):
   def post(self):
