@@ -3,13 +3,13 @@ import cgi
 import webapp2
 import jinja2
 import logging
-import re
 import os
 import base64
 import urllib
 import datetime
 import smtplib
 import database
+import utils
 
 from google.appengine.api import users
 
@@ -17,10 +17,6 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
-  
-EMAIL_RE = re.compile(r"^[\S]+@[\S]+\.[\S]+$")
-def valid_email(email):
-    return EMAIL_RE.match(email)
 
 class MainPage(webapp2.RequestHandler):
   def get(self):
@@ -35,22 +31,24 @@ class RegisterHandler(webapp2.RequestHandler):
   def post(self):
     logging.info(self.request)
     user_email = self.request.get('email','')
-    logging.info(valid_email(user_email))
+    logging.info(utils.valid_email(user_email))
     user_password = self.request.get('password')
     user_cpassword = self.request.get('confirmpassword')
     q = database.Query(database.User)
     q.filter("email =", user_email)
     total = q.count()
     logging.info(total)
-    if (user_email and valid_email(user_email)) and (user_password == user_cpassword) and total == 0:
-      database.User(email=user_email, password=base64.b64encode('user_password')).put()
+    if ((user_email and utils.valid_email(user_email))
+    		and (user_password == user_cpassword) and total == 0):
+      database.User(
+      	email=user_email, password=base64.b64encode('user_password')).put()
       self.redirect('/verify')
       return
     else:
       errors = []
       if(total !=0):
         errors.append("Email address already exists!")
-      elif(user_email or valid_email(user_email)):
+      elif(user_email or utils.valid_email(user_email)):
         errors.append("Email Address is not valid!")
       if(user_password != user_cpassword):
       	errors.append("Password and Confirm password doesn't match!")
@@ -90,7 +88,7 @@ class LoginHandler(webapp2.RequestHandler):
   def post(self):
     logging.info(self.request)
     user_email = self.request.get('email', '')
-    is_valid = valid_email(user_email)
+    is_valid = utils.valid_email(user_email)
     errors = []
     if (is_valid):
       user_password = self.request.get('password', '')
