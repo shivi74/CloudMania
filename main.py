@@ -20,7 +20,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 
 def showIndex(handler, values):
   template = JINJA_ENVIRONMENT.get_template('index.html')
-  self.response.out.write(template.render(values))
+  handler.response.out.write(template.render(values))
 
 class MainPage(webapp2.RequestHandler):
   def get(self):
@@ -41,10 +41,8 @@ class RegisterHandler(webapp2.RequestHandler):
     q.filter("email =", user_email)
     total = q.count()
     logging.info(total)
-    if ((user_email and utils.valid_email(user_email))
-    		and (user_password == user_cpassword) and total == 0):
-      database.User(
-      	email=user_email, password=base64.b64encode(user_password)).put()
+    if ((user_email and utils.valid_email(user_email)) and (user_password == user_cpassword) and total == 0):
+      database.User(email=user_email, password=base64.b64encode(user_password)).put()
       self.redirect('/login#banner')
       return
     else:
@@ -56,8 +54,8 @@ class RegisterHandler(webapp2.RequestHandler):
       if(user_password != user_cpassword):
       	errors.append("Password and Confirm password doesn't match!")
       logging.info(errors)
-      template_values = {"errors": "<br/>".join(errors)}
-      showIndex(template_values)
+    template_values = {"errors": "<br/>".join(errors)}
+    showIndex(self, template_values)
 
 
 class VerifyHandler(webapp2.RequestHandler):
@@ -83,8 +81,7 @@ class VerifyHandler(webapp2.RequestHandler):
       if(not Verify.is_verify):
         errors.append("User not Verified!")
     template_values = {"email":"","uuid":"","is_verify":""}
-    showIndex(template_values)
-
+    showIndex(self, template_values)
 
 class LoginHandler(webapp2.RequestHandler):
 
@@ -110,7 +107,7 @@ class LoginHandler(webapp2.RequestHandler):
     if( not is_valid):
       errors.append('Wrong Username / Password!')
       template_values = {'errors': '<br/>'.join(errors), 'login': True}
-    showIndex(template_values)
+    showIndex(self, template_values)
 
 app = webapp2.WSGIApplication([
     ('/', MainPage),
