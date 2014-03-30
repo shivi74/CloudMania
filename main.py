@@ -8,6 +8,7 @@ import os
 import base64
 import urllib
 import datetime
+import smtplib
 
 from google.appengine.api import users
 from google.appengine.ext import db
@@ -36,51 +37,10 @@ class Forgot(db.Model):
 EMAIL_RE = re.compile(r"^[\S]+@[\S]+\.[\S]+$")
 def valid_email(email):
     return EMAIL_RE.match(email)
-	
+
 class MainPage(webapp2.RequestHandler):
   def get(self):
-    template_values = {"email":"","email_error":"","password":"","confirm password":""}
-    template = JINJA_ENVIRONMENT.get_template('index.html')
-    self.response.out.write(template.render(template_values))
-
-  def post(self):
-    user_email = self.request.get('email')
-    user_password = self.request.get('password')
-    user_cpassword = self.request.get('confirm password')	
-    user_creation = self.request.get('creation')
-    geted_email_error = ""
-    if (user_email and valid_email(user_email)) and (user_password == user_cpassword):
-      a = User(email = user_email,
-          password = base64.b64encode('user_password'),
-          creation = user_creation)
-      a.put()
-    else:
-      geted_email_error = "e-mail is not valid!"
-      template_values = {"email": user_email,"email_error": geted_email_error}
-      template = JINJA_ENVIRONMENT.get_template('index.html')
-      self.response.out.write(template.render(template_values))
-      return
-    self.redirect('/vefiry')
-
-class NextPage(webapp2.RequestHandler):
-  def get(self):
-    template = JINJA_ENVIRONMENT.get_template('index.html')
-    self.response.write(template.render(template_values))
-
-  def post(self):
-    user_email = self.request.get('email')
-    user_uuid = uuid.uuid4(user_email)
-		
-class VerifyHandler(webapp2.RequestHandler):
-
-  def get(self, uuid):
-    template_values = {"email":"","uuid":"","is_verify":""}
-    template = JINJA_ENVIRONMENT.get_template('index.html')
-    self.response.write(template.render({'firstname': uuid, 'lastname': self.request.get('q', 'nothing')}))
-
-  def post(self):
-    user_email = self.request.get('email')
-    user_uuid = uuid.UUID(user_email)
+    self.redirect('/')
 
 class RegisterHandler(webapp2.RequestHandler):
 
@@ -98,8 +58,8 @@ class RegisterHandler(webapp2.RequestHandler):
     total = q.count()
     logging.info(total)
     if (user_email and valid_email(user_email)) and (user_password == user_cpassword) and total == 0:
-	User(email=user_email, password=user_password).put();
-    	self.redirect('/#banner')
+	User(email=user_email, password=base64.b64encode('user_password')).put();
+    	self.redirect('/verify')
 	return
     else:
       errors = []
@@ -115,6 +75,35 @@ class RegisterHandler(webapp2.RequestHandler):
       self.response.out.write(template.render(template_values))
       return
 
+class VerifyHandler(webapp2.RequestHandler):
+
+  def get(self, uuid):
+    self.redirect('/')
+
+  def post(self):
+    logging.info(self.request)
+    user_email = self.request.get('email')
+    user_uuid = uuid.uuid5(uuid.NAMESPACE_DNS, 'user_email')
+    logging.info(user_uuid)
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    #Next, log in to the server
+    server.login("shivani.9487@gmail.com", "SuppermaN")
+    #Send the mail
+    msg = "\nHello! Click on the following link to verify: \n "
+    link = "cloudmania.in/verify/" + user_uuid
+    server.sendmail("shivani.9487@gmail.com", "user_email", msg + link)
+    Verify(email=user_email, uuid=user_uuid, is_verify="false").put();
+    user_uuidg = self.request.get('user_uuid')
+    if (user_uuid and user_uuidg)
+	Verify(email=user_email, uuid=user_uuid, is_verify="true").put();
+    else:
+      errors = []
+      if(not Verify.is_verify):
+	errors.append("User not Verified!")
+    template_values = {"email":"","uuid":"","is_verify":""}
+    template = JINJA_ENVIRONMENT.get_template('index.html')
+    self.response.write(template.render({'firstname': uuid, 'lastname': self.request.get('q', 'nothing')}))
+    
 class LoginHandler(webapp2.RequestHandler):
   def post(self):
     logging.info(self.request)
