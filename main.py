@@ -20,7 +20,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 
 def showIndex(handler, values):
   template = JINJA_ENVIRONMENT.get_template('index.html')
-  self.response.out.write(template.render(values))
+  handler.response.out.write(template.render(values))
 
 class MainPage(webapp2.RequestHandler):
   def get(self):
