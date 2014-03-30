@@ -41,27 +41,17 @@ class RegisterHandler(webapp2.RequestHandler):
     q.filter("email =", user_email)
     total = q.count()
     logging.info(total)
-<<<<<<< HEAD
-    if (user_email and valid_email(user_email)) and (user_password == user_cpassword) and total == 0:
-      User(email=user_email, password=base64.b64encode('user_password')).put();
-      self.redirect('/verify')
-=======
     if ((user_email and utils.valid_email(user_email))
     		and (user_password == user_cpassword) and total == 0):
       database.User(
       	email=user_email, password=base64.b64encode(user_password)).put()
       self.redirect('/login#banner')
->>>>>>> 556b41c8606580436d72cc72c0035ca6b07f0ea7
       return
     else:
       errors = []
       if(total !=0):
         errors.append("Email address already exists!")
-<<<<<<< HEAD
-      elif(user_email or valid_email(user_email)):
-=======
       elif(user_email or utils.valid_email(user_email)):
->>>>>>> 556b41c8606580436d72cc72c0035ca6b07f0ea7
         errors.append("Email Address is not valid!")
       if(user_password != user_cpassword):
       	errors.append("Password and Confirm password doesn't match!")
@@ -109,14 +99,6 @@ class LoginHandler(webapp2.RequestHandler):
     errors = []
     if (is_valid):
       user_password = self.request.get('password', '')
-<<<<<<< HEAD
-      q = db.Query(User)
-      q.filter("email =", user_email)
-      record = q.fetch(1)
-      logging.info(record[0])
-      logging.info(dir(record[0]))
-      if(user_password == record[0].password):
-=======
       q = database.Query(database.User)
       q.filter("email =", user_email)
       record = q.fetch(1)
@@ -124,17 +106,11 @@ class LoginHandler(webapp2.RequestHandler):
       logging.info(base64.b64encode(user_password))
       logging.info(user_password)
       if(base64.b64encode(user_password) == record[0].password):
->>>>>>> 556b41c8606580436d72cc72c0035ca6b07f0ea7
         template_values = {'login': True, 'user': record[0].email}
     if( not is_valid):
       errors.append('Wrong Username / Password!')
       template_values = {'errors': '<br/>'.join(errors), 'login': True}
-<<<<<<< HEAD
-    template = JINJA_ENVIRONMENT.get_template('index.html')
-    self.response.out.write(template.render(template_values))
-=======
     showIndex(template_values)
->>>>>>> 556b41c8606580436d72cc72c0035ca6b07f0ea7
 
 app = webapp2.WSGIApplication([
     ('/', MainPage),
