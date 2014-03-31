@@ -12,6 +12,7 @@ import database
 import utils
 
 from google.appengine.api import users
+from google.appengine.api import mail
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -56,23 +57,31 @@ class RegisterHandler(webapp2.RequestHandler):
       logging.info(errors)
     template_values = {"errors": "<br/>".join(errors)}
     showIndex(self, template_values)
-
+    self.redirect('/verify')
 
 class VerifyHandler(webapp2.RequestHandler):
 
   def get(self):
+    self.redirect('/')
+
+  def post(self):
     logging.info(self.request)
     user_email = self.request.get('email')
     user_uuid = uuid.uuid5(uuid.NAMESPACE_DNS, 'user_email')
     logging.info(user_uuid)
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    #Next, log in to the server
-    server.login("shivani.9487@gmail.com", "SuppermaN")
-    #Send the mail
-    msg = "\nHello! Click on the following link to verify: \n "
-    link = "cloudmania.in/verify/?uuid=" + user_uuid
-    server.sendmail("shivani.9487@gmail.com", "user_email", msg + link)
     database.Verify(email=user_email, uuid=user_uuid, is_verify="false").put();
+    mail.send_mail(sender='shivani.9487@gmail.com',
+              to='user_email',
+              subject="CloudMania Verification mail",
+              body="""
+    Dear User:
+    
+    Hello, Thank you for registering in cloudmania.
+
+    Please tap the following link to complete the email registration process.
+    http://www.cloudmania.in/verify?%s\n\n""" % (Verify.user_uuid)
+    
+    )
     user_uuidg = self.request.get('user_uuid')
     if (user_uuid and user_uuidg):
       Verify(email=user_email, uuid=user_uuid, is_verify="true").put();
@@ -82,6 +91,7 @@ class VerifyHandler(webapp2.RequestHandler):
         errors.append("User not Verified!")
     template_values = {"email":"","uuid":"","is_verify":""}
     showIndex(self, template_values)
+    self.redirect('/login')
 
 class LoginHandler(webapp2.RequestHandler):
 
