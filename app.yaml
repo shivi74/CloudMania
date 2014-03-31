@@ -11,6 +11,7 @@ handlers:
 
 - url: /css
   static_dir: css
+  mime_type: "text/css"
 
 - url: /js
   static_dir: js
