@@ -71,7 +71,7 @@ class VerifyHandler(webapp2.RequestHandler):
     logging.info(user_uuid)
     database.Verify(email=user_email, uuid=user_uuid, is_verify="false").put();
     mail.send_mail(sender='shivani.9487@gmail.com',
-              to='user_email',
+              to=user_email,
               subject="CloudMania Verification mail",
               body="""
     Dear User:
@@ -82,9 +82,12 @@ class VerifyHandler(webapp2.RequestHandler):
     http://www.cloudmania.in/verify?%s\n\n""" % (Verify.user_uuid)
     
     )
+    logging.info(mail.send_mail)
     user_uuidg = self.request.get('user_uuid')
+    logging.info(user_uuidg)
     if (user_uuid and user_uuidg):
       Verify(email=user_email, uuid=user_uuid, is_verify="true").put();
+      print "Verification Successfull."
     else:
       errors = []
       if(not Verify.is_verify):
@@ -118,10 +121,46 @@ class LoginHandler(webapp2.RequestHandler):
       errors.append('Wrong Username / Password!')
       template_values = {'errors': '<br/>'.join(errors), 'login': True}
     showIndex(self, template_values)
-
+    
+class ForgotHandler(webapp2.RequestHandler):
+    
+  def get(self):
+    template = JINJA_ENVIRONMENT.get_template('index.html')
+    self.response.write(template.render({'forgot': True}))
+      
+  def post(self):
+    logging.info(self.request)
+    user_email = self.request.get('email')
+    user_uuid = uuid.uuid5(uuid.NAMESPACE_DNS, 'user_email')
+    logging.info(user_uuid)
+    database.Verify(email=user_email, uuid=user_uuid, is_viewed="false").put();
+    mail.send_mail(sender='shivani.9487@gmail.com',
+              to=user_email,
+              subject="CloudMania Reset Password",
+              body="""
+    Dear User:
+    
+    Hello, Please tap the following link to change password.
+    http://www.cloudmania.in/forgotpassword?%s\n\n""" % (Forgot.user_uuid)
+    
+    )
+    logging.info(mail.send_mail)
+    user_uuidg = self.request.get('user_uuid')
+    logging.info(user_uuidg)
+    if (user_uuid and user_uuidg):
+      user_password = self.request.get('password')
+      Forgot(email=user_email, password=base64.b64encode(user_password), uuid=user_uuid, is_viewed="true").put();
+      print "Password Changed."
+    else:
+      errors = []
+      if(not Forgot.is_viewed):
+        errors.append("Password cannot be changed!")
+    template_values = {"email":"","uuid":"","is_viewed":""}
+    
 app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/verify', VerifyHandler),
     ('/register', RegisterHandler),
     ('/login', LoginHandler),
+    ('/forgot', ForgotHandler)
 ], debug=True)
