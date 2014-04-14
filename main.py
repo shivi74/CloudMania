@@ -149,6 +149,7 @@ class LoginHandler(BaseHandler):
     if (not is_valid):
       errors.append('Wrong Username / Password!')
       template_values = {'errors': '<br/>'.join(errors), 'login': True}
+    self.session["user"] = user_email
     showIndex(self, template_values)
 
 class ForgotHandler(BaseHandler):
@@ -220,11 +221,12 @@ class SettingsHandler(BaseHandler):
 class LogoutHandler(BaseHandler):
 
   def get(self):
-    template = JINJA_ENVIRONMENT.get_template('index.html')
-    self.response.write(template.render({'logout': True}))
+    self.post()
+
 
   def post(self):
     logging.info(self.request)
+    self.session["user"] = None
     user = users.get_current_user()
     if user:
       users.create_logout_url(self.request.uri)
