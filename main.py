@@ -12,21 +12,50 @@ import database
 import utils
 
 from google.appengine.api import users
+from google.appengine.api import mail
+from webapp2_extras import sessions
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
+CONFIG = {}
+CONFIG['webapp2_extras.sessions'] = dict(secret_key='cloudmaniadotcom')
+
+
 def showIndex(handler, values):
   template = JINJA_ENVIRONMENT.get_template('index.html')
   handler.response.out.write(template.render(values))
 
-class MainPage(webapp2.RequestHandler):
+
+class BaseHandler(webapp2.RequestHandler):
+  def dispatch(self):
+    """
+      This snippet of code is taken from the webapp2 framework documentation.
+      See more at
+      http://webapp-improved.appspot.com/api/webapp2_extras/sessions.html
+      """
+    self.session_store = sessions.get_store(request=self.request)
+    try:
+      webapp2.RequestHandler.dispatch(self)
+    finally:
+      self.session_store.save_sessions(self.response)
+
+  @webapp2.cached_property
+  def session(self):
+    """
+      This snippet of code is taken from the webapp2 framework documentation.
+      See more at
+      http://webapp-improved.appspot.com/api/webapp2_extras/sessions.html
+      """
+    return self.session_store.get_session()
+
+class MainPage(BaseHandler):
   def get(self):
       showIndex(self, {})
 
-class RegisterHandler(webapp2.RequestHandler):
+class RegisterHandler(BaseHandler):
 
   def get(self):
     self.redirect('/')
@@ -56,34 +85,46 @@ class RegisterHandler(webapp2.RequestHandler):
       logging.info(errors)
     template_values = {"errors": "<br/>".join(errors)}
     showIndex(self, template_values)
+    self.redirect('/verify')
 
-
-class VerifyHandler(webapp2.RequestHandler):
+class VerifyHandler(BaseHandler):
 
   def get(self):
+    self.redirect('/')
+
+  def post(self):
     logging.info(self.request)
     user_email = self.request.get('email')
     user_uuid = uuid.uuid5(uuid.NAMESPACE_DNS, 'user_email')
     logging.info(user_uuid)
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    #Next, log in to the server
-    server.login("shivani.9487@gmail.com", "SuppermaN")
-    #Send the mail
-    msg = "\nHello! Click on the following link to verify: \n "
-    link = "cloudmania.in/verify/?uuid=" + user_uuid
-    server.sendmail("shivani.9487@gmail.com", "user_email", msg + link)
-    database.Verify(email=user_email, uuid=user_uuid, is_verify="false").put();
+    database.Verify(email = 'user_email', uuid = 'user_uuid', is_verify= False).put();
+    mail.send_mail(sender = 'shivani.9487@gmail.com',
+              to = 'user_email',
+              subject = "CloudMania Verification mail",
+              body="""
+    Dear User:
+
+    Hello, Thank you for registering in cloudmania.
+
+    Please tap the following link to complete the email registration process.
+    http://www.cloudmania.in/verify?%s\n\n""" % (database.Verify.uuid)
+
+    )
+    logging.info(mail.send_mail)
     user_uuidg = self.request.get('user_uuid')
-    if (user_uuid and user_uuidg):
-      Verify(email=user_email, uuid=user_uuid, is_verify="true").put();
+    logging.info(user_uuidg)
+    if ((user_uuid and user_uuidg) and (database.Verify.is_verify == False)):
+      database.Verify(email = 'user_email', uuid = 'user_uuid', is_verify = True).put();
+      print "Verification Successfull."
     else:
       errors = []
-      if(not Verify.is_verify):
+      if(not database.Verify.is_verify):
         errors.append("User not Verified!")
-    template_values = {"email":"","uuid":"","is_verify":""}
+    template_values = {"errors": "<br/>".join(errors),"email":""}
     showIndex(self, template_values)
+    self.redirect('/login')
 
-class LoginHandler(webapp2.RequestHandler):
+class LoginHandler(BaseHandler):
 
   def get(self):
     template = JINJA_ENVIRONMENT.get_template('index.html')
@@ -98,15 +139,106 @@ class LoginHandler(webapp2.RequestHandler):
       user_password = self.request.get('password', '')
       q = database.Query(database.User)
       q.filter("email =", user_email)
+      logging.info(user_email)
       record = q.fetch(1)
       logging.info(record[0].password)
       logging.info(base64.b64encode(user_password))
       logging.info(user_password)
+<<<<<<< HEAD
     if (base64.b64encode(user_password) == record[0].password):
       template_values = {'login': True, 'user': record[0].email}
+=======
+      if(base64.b64encode(user_password) == record[0].password):
+        template_values = {'login': True, 'user': record[0].email}
+>>>>>>> ef60a8fb1d0e9932ec61e3dc0dd97cba32188e07
     if (not is_valid):
       errors.append('Wrong Username / Password!')
       template_values = {'errors': '<br/>'.join(errors), 'login': True}
+    self.session["user"] = user_email
+    showIndex(self, template_values)
+
+class ForgotHandler(BaseHandler):
+
+  def get(self):
+    template = JINJA_ENVIRONMENT.get_template('index.html')
+    self.response.write(template.render({'forgot': True}))
+
+  def post(self):
+    logging.info(self.request)
+    user_email = self.request.get('email')
+    user_uuid = uuid.uuid5(uuid.NAMESPACE_DNS, 'user_email')
+    logging.info(user_uuid)
+    errors = []
+    database.Forgot(email = 'user_email', uuid = 'user_uuid', is_viewed = False).put();
+    #self.response.write(template.render({'reset': True}))
+    mail.send_mail(sender='shivani.9487@gmail.com',
+              to='user_email',
+              subject="CloudMania Reset Password",
+              body="""
+    Dear User,
+
+    Hello, Please tap the following link to change password.
+    http://www.cloudmania.in/forgotpassword?%s\n\n""" % (database.Forgot.uuid)
+
+    )
+    logging.info(mail.send_mail)
+    user_uuidg = self.request.get('user_uuid')
+    logging.info(user_uuidg)
+    if (user_uuid and user_uuidg):
+      user_password = self.request.get('password','')
+      user_cpassword = self.request.get('confirmpassword','')
+      if (user_password and user_cpassword):
+        database.Forgot(email = 'user_email', password = base64.b64encode(user_password), uuid = 'user_uuid', is_viewed = True).put();
+      else:
+        errors.append("Password don't match!")
+      self.redirect('/login')
+    else:
+      if(not database.Forgot.is_viewed):
+        errors.append("Password cannot be changed!")
+    template_values = {'errors': '<br/>'.join(errors), "email":"", "password":""}
+    showIndex(self, template_values)
+
+
+class ChangepasswordHandler(BaseHandler):
+
+  def get(self):
+    template = JINJA_ENVIRONMENT.get_template('index.html')
+    self.response.write(template.render({'changepassword': True}))
+
+  def post(self):
+    logging.info(self.request)
+    errors = []
+    user_password = self.request.get('password', '')
+    if (database.User.password and user_password):
+      user_npassword = self.request.get('npassword', '')
+      user_cpassword = self.request.get('confirmpassword', '')
+      logging.info(base64.b64encode(user_password))
+      logging.info(user_npassword)
+      if (user_npassword and user_cpassword):
+        database.User(email=user_email, password=base64.b64encode(user_npassword)).put();
+      else:
+        errors.append("Password don't match!")
+    else:
+      errors.append("Old Password don't match!")
+      template_values = {'errors': '<br/>'.join(errors), 'changepassword': True}
+    showIndex(self, template_values)
+
+
+class LogoutHandler(BaseHandler):
+
+  def get(self):
+    self.post()
+
+
+  def post(self):
+    logging.info(self.request)
+    self.session["user"] = None
+    user = users.get_current_user()
+    if user:
+      users.create_logout_url(self.request.uri)
+    else:
+      self.redirect('/login')
+    template_values = {'logout': True}
     showIndex(self, template_values)
 
 app = webapp2.WSGIApplication([
@@ -114,4 +246,7 @@ app = webapp2.WSGIApplication([
     ('/verify', VerifyHandler),
     ('/register', RegisterHandler),
     ('/login', LoginHandler),
-], debug=True)
+    ('/forgot', ForgotHandler),
+    ('/changepassword', ChangepasswordHandler),
+    ('/logout', LogoutHandler)
+], debug=True, config=CONFIG)
