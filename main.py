@@ -192,11 +192,11 @@ class ForgotHandler(BaseHandler):
     template_values = {'errors': '<br/>'.join(errors), "email":"", "password":""}
     showIndex(self, template_values)
 
-class SettingsHandler(BaseHandler):
+class ChangepasswordHandler(BaseHandler):
 
   def get(self):
     template = JINJA_ENVIRONMENT.get_template('index.html')
-    self.response.write(template.render({'settings': True}))
+    self.response.write(template.render({'changepassword': True}))
 
   def post(self):
     logging.info(self.request)
@@ -213,7 +213,7 @@ class SettingsHandler(BaseHandler):
         errors.append("Password don't match!")
     else:
       errors.append("Old Password don't match!")
-      template_values = {'errors': '<br/>'.join(errors), 'settings': True}
+      template_values = {'errors': '<br/>'.join(errors), 'changepassword': True}
     showIndex(self, template_values)
 
 
@@ -239,6 +239,6 @@ app = webapp2.WSGIApplication([
     ('/register', RegisterHandler),
     ('/login', LoginHandler),
     ('/forgot', ForgotHandler),
-    ('/settings', SettingsHandler),
+    ('/changepassword', ChangepasswordHandler),
     ('/logout', LogoutHandler)
 ], debug=True, config=CONFIG)
