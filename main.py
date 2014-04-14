@@ -192,7 +192,11 @@ class ForgotHandler(BaseHandler):
     template_values = {'errors': '<br/>'.join(errors), "email":"", "password":""}
     showIndex(self, template_values)
 
+<<<<<<< HEAD
 class ChangepasswordHandler(BaseHandler):
+=======
+class SettingsHandler(BaseHandler):
+>>>>>>> d26b0fe23855756547768dee171642def74f8978
 
   def get(self):
     template = JINJA_ENVIRONMENT.get_template('index.html')
