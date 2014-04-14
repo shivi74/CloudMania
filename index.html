@@ -59,13 +59,13 @@
         	<h2>Welcome, {{user}}</h2>
 		<br>
 		<input type="button" class="button style2" value="Add Site" name="addsite" />
-		<input type="button" class="button style2" value="Change Password" name="settings" />
-		{% if settings %}
-			<form action="/settings#banner" method="post">
+		<a href="/settings"><input type="button" class="button style2" value="Change Password" name="changepassword" /></a>
+		{% if changepassword %}
+			<form action="/changepassword#banner" method="post">
 			  <div><input type="password" class="text" name="password" placeholder="Password"></div>
 			  <div><input type="password" class="text" name="newpassword" placeholder="New Password"></div>
 			  <div><input type="password" class="text" name="confirmpassword" placeholder="Confirm Password"></div>
-			  <input type="submit" class="button style2" value="Change Password" name="changepassword" />
+			  <input type="submit" class="button style2" value="Change Password" name="change_password" />
 			</form>
 		{% endif %}
 		<br>
