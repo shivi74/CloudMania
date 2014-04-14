@@ -13,21 +13,49 @@ import utils
 
 from google.appengine.api import users
 from google.appengine.api import mail
+from webapp2_extras import sessions
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
+CONFIG = {}
+CONFIG['webapp2_extras.sessions'] = dict(secret_key='cloudmaniadotcom')
+
+
 def showIndex(handler, values):
   template = JINJA_ENVIRONMENT.get_template('index.html')
   handler.response.out.write(template.render(values))
 
-class MainPage(webapp2.RequestHandler):
+
+class BaseHandler(webapp2.RequestHandler):
+  def dispatch(self):
+    """
+      This snippet of code is taken from the webapp2 framework documentation.
+      See more at
+      http://webapp-improved.appspot.com/api/webapp2_extras/sessions.html
+      """
+    self.session_store = sessions.get_store(request=self.request)
+    try:
+      webapp2.RequestHandler.dispatch(self)
+    finally:
+      self.session_store.save_sessions(self.response)
+
+  @webapp2.cached_property
+  def session(self):
+    """
+      This snippet of code is taken from the webapp2 framework documentation.
+      See more at
+      http://webapp-improved.appspot.com/api/webapp2_extras/sessions.html
+      """
+    return self.session_store.get_session()
+
+class MainPage(BaseHandler):
   def get(self):
   	showIndex(self, {})
 
-class RegisterHandler(webapp2.RequestHandler):
+class RegisterHandler(BaseHandler):
 
   def get(self):
     self.redirect('/')
@@ -59,7 +87,7 @@ class RegisterHandler(webapp2.RequestHandler):
     showIndex(self, template_values)
     self.redirect('/verify')
 
-class VerifyHandler(webapp2.RequestHandler):
+class VerifyHandler(BaseHandler):
 
   def get(self):
     self.redirect('/')
@@ -75,12 +103,12 @@ class VerifyHandler(webapp2.RequestHandler):
               subject = "CloudMania Verification mail",
               body="""
     Dear User:
-    
+
     Hello, Thank you for registering in cloudmania.
 
     Please tap the following link to complete the email registration process.
     http://www.cloudmania.in/verify?%s\n\n""" % (database.Verify.uuid)
-    
+
     )
     logging.info(mail.send_mail)
     user_uuidg = self.request.get('user_uuid')
@@ -96,7 +124,7 @@ class VerifyHandler(webapp2.RequestHandler):
     showIndex(self, template_values)
     self.redirect('/login')
 
-class LoginHandler(webapp2.RequestHandler):
+class LoginHandler(BaseHandler):
 
   def get(self):
     template = JINJA_ENVIRONMENT.get_template('index.html')
@@ -111,6 +139,7 @@ class LoginHandler(webapp2.RequestHandler):
       user_password = self.request.get('password', '')
       q = database.Query(database.User)
       q.filter("email =", user_email)
+      logging.info(user_email)
       record = q.fetch(1)
       logging.info(record[0].password)
       logging.info(base64.b64encode(user_password))
@@ -121,13 +150,13 @@ class LoginHandler(webapp2.RequestHandler):
       errors.append('Wrong Username / Password!')
       template_values = {'errors': '<br/>'.join(errors), 'login': True}
     showIndex(self, template_values)
-    
-class ForgotHandler(webapp2.RequestHandler):
-    
+
+class ForgotHandler(BaseHandler):
+
   def get(self):
     template = JINJA_ENVIRONMENT.get_template('index.html')
     self.response.write(template.render({'forgot': True}))
-      
+
   def post(self):
     logging.info(self.request)
     user_email = self.request.get('email')
@@ -141,10 +170,10 @@ class ForgotHandler(webapp2.RequestHandler):
               subject="CloudMania Reset Password",
               body="""
     Dear User,
-    
+
     Hello, Please tap the following link to change password.
     http://www.cloudmania.in/forgotpassword?%s\n\n""" % (database.Forgot.uuid)
-    
+
     )
     logging.info(mail.send_mail)
     user_uuidg = self.request.get('user_uuid')
@@ -162,9 +191,9 @@ class ForgotHandler(webapp2.RequestHandler):
         errors.append("Password cannot be changed!")
     template_values = {'errors': '<br/>'.join(errors), "email":"", "password":""}
     showIndex(self, template_values)
-    
-class SettingsHandler(webapp2.RequestHandler):
-    
+
+class SettingsHandler(BaseHandler):
+
   def get(self):
     template = JINJA_ENVIRONMENT.get_template('index.html')
     self.response.write(template.render({'settings': True}))
@@ -187,8 +216,8 @@ class SettingsHandler(webapp2.RequestHandler):
       template_values = {'errors': '<br/>'.join(errors), 'settings': True}
     showIndex(self, template_values)
 
-    
-class LogoutHandler(webapp2.RequestHandler):
+
+class LogoutHandler(BaseHandler):
 
   def get(self):
     template = JINJA_ENVIRONMENT.get_template('index.html')
@@ -203,7 +232,7 @@ class LogoutHandler(webapp2.RequestHandler):
       self.redirect('/login')
     template_values = {'logout': True}
     showIndex(self, template_values)
-    
+
 app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/verify', VerifyHandler),
@@ -212,4 +241,4 @@ app = webapp2.WSGIApplication([
     ('/forgot', ForgotHandler),
     ('/settings', SettingsHandler),
     ('/logout', LogoutHandler)
-], debug=True)
+], debug=True, config=CONFIG)
