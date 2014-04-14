@@ -43,6 +43,7 @@
 				</header>
         {% endif %}
         {% if errors %}
+		<p>{{ errors }}</p>
         	{{ errors|safe }}
         {% endif %}
         {% if not user %}
@@ -52,25 +53,48 @@
           <div><input type="password" class="text" name="confirmpassword" placeholder="Confirm Password"></div>
           <input type="submit" class="button style2" value="Register" name="register" />
           <input type="button" class="button style2" value="Already Registered?" name="login" />
+	  <div><a href="/forgot">Forgot password?</a></div>
         </form>
         {% else %}
         	<h2>Welcome, {{user}}</h2>
+		<br>
+		<input type="button" class="button style2" value="Add Site" name="addsite" />
+		<input type="button" class="button style2" value="Change Password" name="settings" />
+		{% if settings %}
+			<form action="/settings#banner" method="post">
+			  <div><input type="password" class="text" name="password" placeholder="Password"></div>
+			  <div><input type="password" class="text" name="newpassword" placeholder="New Password"></div>
+			  <div><input type="password" class="text" name="confirmpassword" placeholder="Confirm Password"></div>
+			  <input type="submit" class="button style2" value="Change Password" name="changepassword" />
+			</form>
+		{% endif %}
+		<br>
+		<a href="/logout">Logout</a>
         {% endif %}
         {% if login %}
         <script>
         	alreadyRegistered();
         </script>
-		{% if forgot %}
-		<form action="/forgot" method="post">
-	  	  <div><input type="text" class="text" name="email" placeholder="Email"></div>
-	          <div><input type="password" class="text" name="password" placeholder="Password"></div>
-	          <div><input type="password" class="text" name="confirmpassword" placeholder="Confirm Password"></div>
-	          <input type="submit" class="button style2" value="Confirm" name="confirm" />
-	        </form>
-		{% end if %}
         {% endif %}
+	{% if forgot %}
+	<header>
+		<h2 id="forgot-header">Forgot Password</h2>
+	</header>
+	<form action="/forgot#banner" method="post">
+	  <div><input type="text" class="text" name="email" placeholder="Email"></div>
+	  <input type="submit" class="button style2" value="Reset Password" name="reset" />
+	</form>
+		{% if reset %}
+		<form action="/reset#banner" method="post">
+		  <div><input type="password" class="text" name="password" placeholder="Password"></div>
+		  <div><input type="password" class="text" name="confirmpassword" placeholder="Confirm Password"></div>
+		  <input type="button" class="button style2" value="Change Password" name="changepassword" />
+		</form>
+		{% endif %}
+	{% endif %}
       </section>
 		
+		{% if not user %}
 		<!-- Feature 1 -->
 			<article id="first" class="container box style1 right">
 				<a href="http://ineedchemicalx.deviantart.com/art/Time-goes-by-too-fast-335982438" class="image full"><img src="images/pic01.jpg" alt="" /></a>
@@ -97,12 +121,12 @@
 					and many more...</p>
 				</div>
 			</article>
-		
+		{% endif %}
 		<!-- Contact -->
 			<article class="container box style3">
 				<header>
-					<h2>Nisl sed ultricies</h2>
-					<p>Diam dignissim lectus eu ornare volutpat orci.</p>
+					<h2>Contact us !! </h2>
+					<p>Give your precious feedback below.</p>
 				</header>
 				<form>
 					<div class="row half">

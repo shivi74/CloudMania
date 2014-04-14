@@ -18,3 +18,5 @@ class Forgot(db.Model):
   uuid = db.StringProperty(required = True)
   is_viewed = db.BooleanProperty()
   password = db.TextProperty()
+  
+  
