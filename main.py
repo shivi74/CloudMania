@@ -71,8 +71,24 @@ class RegisterHandler(BaseHandler):
     total = q.count()
     logging.info(total)
     if ((user_email and utils.valid_email(user_email)) and (user_password == user_cpassword) and total == 0):
-      database.User(email=user_email, password=base64.b64encode(user_password)).put()
-      self.redirect('/login#banner')
+      #New "uuid" field added to user database 
+      user_uuid = uuid.uuid5(uuid.NAMESPACE_DNS, 'user_email')
+      logging.info(user_uuid)
+      database.User(email='user_email', password=base64.b64encode(user_password), uuid = 'user_uuid').put()
+      mail.send_mail(sender = 'shivani.9487@gmail.com',
+              to = 'user_email',
+              subject = "CloudMania Verification mail",
+              body="""
+    Dear User:
+
+    Hello, Thank you for registering in cloudmania.
+
+    Please tap the following link to complete the email registration process.
+    http://www.cloudmania.in/verify?%s\n\n""" % (database.User.uuid)
+
+    )
+      logging.info(mail.send_mail)
+      self.redirect('/verify')
       return
     else:
       errors = []
@@ -85,7 +101,7 @@ class RegisterHandler(BaseHandler):
       logging.info(errors)
     template_values = {"errors": "<br/>".join(errors)}
     showIndex(self, template_values)
-    self.redirect('/verify')
+    self.redirect('/login#banner')
 
 class VerifyHandler(BaseHandler):
 
@@ -95,22 +111,10 @@ class VerifyHandler(BaseHandler):
   def post(self):
     logging.info(self.request)
     user_email = self.request.get('email')
-    user_uuid = uuid.uuid5(uuid.NAMESPACE_DNS, 'user_email')
-    logging.info(user_uuid)
+    #Old uuid taken from user database
+    user_uuid = database.User.uuid
     database.Verify(email = 'user_email', uuid = 'user_uuid', is_verify= False).put();
-    mail.send_mail(sender = 'shivani.9487@gmail.com',
-              to = 'user_email',
-              subject = "CloudMania Verification mail",
-              body="""
-    Dear User:
-
-    Hello, Thank you for registering in cloudmania.
-
-    Please tap the following link to complete the email registration process.
-    http://www.cloudmania.in/verify?%s\n\n""" % (database.Verify.uuid)
-
-    )
-    logging.info(mail.send_mail)
+    #Problem : how to differetiate old and new uuid's ?
     user_uuidg = self.request.get('user_uuid')
     logging.info(user_uuidg)
     if ((user_uuid and user_uuidg) and (database.Verify.is_verify == False)):
@@ -145,11 +149,12 @@ class LoginHandler(BaseHandler):
       logging.info(base64.b64encode(user_password))
       logging.info(user_password)
       if(base64.b64encode(user_password) == record[0].password):
+        self.session['user'] = user_email
+        logging.info("%s just logged in" % user)
         template_values = {'login': True, 'user': record[0].email}
     if (not is_valid):
       errors.append('Wrong Username / Password!')
       template_values = {'errors': '<br/>'.join(errors), 'login': True}
-    self.session["user"] = user_email
     showIndex(self, template_values)
 
 class ForgotHandler(BaseHandler):
@@ -165,7 +170,7 @@ class ForgotHandler(BaseHandler):
     logging.info(user_uuid)
     errors = []
     database.Forgot(email = 'user_email', uuid = 'user_uuid', is_viewed = False).put();
-    #self.response.write(template.render({'reset': True}))
+    template_values = {'reset': True}
     mail.send_mail(sender='shivani.9487@gmail.com',
               to='user_email',
               subject="CloudMania Reset Password",
@@ -202,15 +207,17 @@ class ChangepasswordHandler(BaseHandler):
 
   def post(self):
     logging.info(self.request)
+    #get user session, but still its redirected to register
+    user = self.session.get('user')
     errors = []
     user_password = self.request.get('password', '')
-    if (database.User.password and user_password):
+    if ((database.User.password and user_password) and user):
       user_npassword = self.request.get('npassword', '')
       user_cpassword = self.request.get('confirmpassword', '')
       logging.info(base64.b64encode(user_password))
       logging.info(user_npassword)
       if (user_npassword and user_cpassword):
-        database.User(email=user_email, password=base64.b64encode(user_npassword)).put();
+        database.User(email='user_email', password=base64.b64encode(user_npassword)).put();
       else:
         errors.append("Password don't match!")
     else:
@@ -223,7 +230,6 @@ class LogoutHandler(BaseHandler):
 
   def get(self):
     self.post()
-
 
   def post(self):
     logging.info(self.request)
