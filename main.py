@@ -72,9 +72,9 @@ class RegisterHandler(BaseHandler):
     logging.info(total)
     if ((user_email and utils.valid_email(user_email)) and (user_password == user_cpassword) and total == 0):
       #New "uuid" field added to user database 
-      user_uuid = uuid.uuid5(uuid.NAMESPACE_DNS, 'user_email')
+      user_uuid = uuid.uuid5(uuid.NAMESPACE_URL, 'user_email')
       logging.info(user_uuid)
-      database.User(email='user_email', password=base64.b64encode(user_password), uuid = 'user_uuid').put()
+      database.User(email = user_email, password = base64.b64encode(user_password), uuid = user_uuid).put()
       mail.send_mail(sender = 'shivani.9487@gmail.com',
               to = 'user_email',
               subject = "CloudMania Verification mail",
@@ -113,13 +113,14 @@ class VerifyHandler(BaseHandler):
     user_email = self.request.get('email')
     #Old uuid taken from user database
     user_uuid = database.User.uuid
-    database.Verify(email = 'user_email', uuid = 'user_uuid', is_verify= False).put();
+    database.Verify(email = user_email, uuid = user_uuid, is_verify= False).put();
     #Problem : how to differetiate old and new uuid's ?
-    user_uuidg = self.request.get('user_uuid')
+    user_uuidg = self.request.get('uuid')
     logging.info(user_uuidg)
     if ((user_uuid and user_uuidg) and (database.Verify.is_verify == False)):
-      database.Verify(email = 'user_email', uuid = 'user_uuid', is_verify = True).put();
-      print "Verification Successfull."
+      database.Verify(email = user_email, uuid = user_uuid, is_verify = True).put();
+      success = []
+      success.append("Verification Successfull!")
     else:
       errors = []
       if(not database.Verify.is_verify):
@@ -164,12 +165,13 @@ class ForgotHandler(BaseHandler):
     self.response.write(template.render({'forgot': True}))
 
   def post(self):
+    success = []
     logging.info(self.request)
     user_email = self.request.get('email')
     user_uuid = uuid.uuid5(uuid.NAMESPACE_DNS, 'user_email')
     logging.info(user_uuid)
     errors = []
-    database.Forgot(email = 'user_email', uuid = 'user_uuid', is_viewed = False).put();
+    database.Forgot(email = user_email, uuid = user_uuid, is_viewed = False).put();
     template_values = {'reset': True}
     mail.send_mail(sender='shivani.9487@gmail.com',
               to='user_email',
@@ -188,7 +190,8 @@ class ForgotHandler(BaseHandler):
       user_password = self.request.get('password','')
       user_cpassword = self.request.get('confirmpassword','')
       if (user_password and user_cpassword):
-        database.Forgot(email = 'user_email', password = base64.b64encode(user_password), uuid = 'user_uuid', is_viewed = True).put();
+        success.append("Password Changed !")
+        database.Forgot(email = user_email, password = base64.b64encode(user_password), uuid = user_uuid, is_viewed = True).put();
       else:
         errors.append("Password don't match!")
       self.redirect('/login')
@@ -217,7 +220,9 @@ class ChangepasswordHandler(BaseHandler):
       logging.info(base64.b64encode(user_password))
       logging.info(user_npassword)
       if (user_npassword and user_cpassword):
-        database.User(email='user_email', password=base64.b64encode(user_npassword)).put();
+        success = []
+        success.append("Password changed !")
+        database.User(email = user_email, password=base64.b64encode(user_npassword)).put();
       else:
         errors.append("Password don't match!")
     else:

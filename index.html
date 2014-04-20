@@ -92,6 +92,9 @@
 		</form>
 		{% endif %}
 	{% endif %}
+	{% if success %}
+		<p>{{ success }}</p>
+        {% endif %}
       </section>
 		
 		{% if not user %}
