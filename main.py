@@ -76,9 +76,8 @@ class RegisterHandler(BaseHandler):
       logging.info(user_uuid)
       database.User(email = user_email, password = base64.b64encode(user_password), uuid = user_uuid).put()
       sender = 'love.sharma.87@gmail.com'
-      to = sender
       mail.send_mail(sender = sender,
-                     to = to,
+                     to = user_email,
                      subject = "CloudMania Verification mail",
                      body="""
                          Dear User:
