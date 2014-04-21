@@ -75,7 +75,8 @@ class RegisterHandler(BaseHandler):
       user_uuid = str(uuid.uuid5(uuid.NAMESPACE_URL, 'user_email'))
       logging.info(user_uuid)
       database.User(email = user_email, password = base64.b64encode(user_password), uuid = user_uuid).put()
-      sender = 'love.sharma.87@gmail.com'
+      sender = 'shivani.9487@gmail.com'
+      to = user_email
       mail.send_mail(sender = sender,
                      to = user_email,
                      subject = "CloudMania Verification mail",
@@ -83,8 +84,8 @@ class RegisterHandler(BaseHandler):
                          Dear User:
                          Hello, Thank you for registering in cloudmania.
                          Please tap the following link to complete the email registration process.
-                         http://www.cloudmania.in/verify?%s\n\n""" % (database.User.uuid))
-      self.redirect('/verify')
+                         http://www.cloudmania.in/verify?%s\n\n""" % (user_uuid))
+      self.redirect('/login#banner')
       return
     else:
       errors = []
@@ -97,7 +98,6 @@ class RegisterHandler(BaseHandler):
       logging.info(errors)
     template_values = {"errors": "<br/>".join(errors)}
     showIndex(self, template_values)
-    self.redirect('/login#banner')
 
 class VerifyHandler(BaseHandler):
 
@@ -170,13 +170,13 @@ class ForgotHandler(BaseHandler):
     database.Forgot(email = user_email, uuid = user_uuid, is_viewed = False).put();
     template_values = {'reset': True}
     mail.send_mail(sender='shivani.9487@gmail.com',
-              to='user_email',
+              to = user_email,
               subject="CloudMania Reset Password",
               body="""
     Dear User,
 
     Hello, Please tap the following link to change password.
-    http://www.cloudmania.in/forgotpassword?%s\n\n""" % (database.Forgot.uuid)
+    http://www.cloudmania.in/forgotpassword?%s\n\n""" % (user_uuid)
 
     )
     logging.info(mail.send_mail)
