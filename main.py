@@ -85,7 +85,7 @@ class RegisterHandler(BaseHandler):
                          Hello, Thank you for registering in cloudmania.
                          Please tap the following link to complete the email registration process.
                          http://www.cloudmania.in/verify?%s\n\n""" % (user_uuid))
-      self.redirect('/verify')
+      self.redirect('/login#banner')
       return
     else:
       errors = []
@@ -98,7 +98,6 @@ class RegisterHandler(BaseHandler):
       logging.info(errors)
     template_values = {"errors": "<br/>".join(errors)}
     showIndex(self, template_values)
-    self.redirect('/login#banner')
 
 class VerifyHandler(BaseHandler):
 
