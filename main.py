@@ -71,23 +71,20 @@ class RegisterHandler(BaseHandler):
     total = q.count()
     logging.info(total)
     if ((user_email and utils.valid_email(user_email)) and (user_password == user_cpassword) and total == 0):
-      #New "uuid" field added to user database 
+      #New "uuid" field added to user database
       user_uuid = str(uuid.uuid5(uuid.NAMESPACE_URL, 'user_email'))
       logging.info(user_uuid)
       database.User(email = user_email, password = base64.b64encode(user_password), uuid = user_uuid).put()
-      mail.send_mail(sender = 'shivani.9487@gmail.com',
-              to = 'user_email',
-              subject = "CloudMania Verification mail",
-              body="""
-    Dear User:
-
-    Hello, Thank you for registering in cloudmania.
-
-    Please tap the following link to complete the email registration process.
-    http://www.cloudmania.in/verify?%s\n\n""" % (database.User.uuid)
-
-    )
-      logging.info(mail.send_mail)
+      sender = 'love.sharma.87@gmail.com'
+      to = sender
+      mail.send_mail(sender = sender,
+                     to = to,
+                     subject = "CloudMania Verification mail",
+                     body="""
+                         Dear User:
+                         Hello, Thank you for registering in cloudmania.
+                         Please tap the following link to complete the email registration process.
+                         http://www.cloudmania.in/verify?%s\n\n""" % (database.User.uuid))
       self.redirect('/verify')
       return
     else:
@@ -151,7 +148,7 @@ class LoginHandler(BaseHandler):
       logging.info(user_password)
       if(base64.b64encode(user_password) == record[0].password):
         self.session['user'] = user_email
-        logging.info("%s just logged in" % user)
+        logging.info("%s just logged in" % user_email)
         template_values = {'login': True, 'user': record[0].email}
     if (not is_valid):
       errors.append('Wrong Username / Password!')
