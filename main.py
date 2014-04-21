@@ -72,7 +72,7 @@ class RegisterHandler(BaseHandler):
     logging.info(total)
     if ((user_email and utils.valid_email(user_email)) and (user_password == user_cpassword) and total == 0):
       #New "uuid" field added to user database 
-      user_uuid = uuid.uuid5(uuid.NAMESPACE_URL, 'user_email')
+      user_uuid = str(uuid.uuid5(uuid.NAMESPACE_URL, 'user_email'))
       logging.info(user_uuid)
       database.User(email = user_email, password = base64.b64encode(user_password), uuid = user_uuid).put()
       mail.send_mail(sender = 'shivani.9487@gmail.com',
