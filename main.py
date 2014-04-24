@@ -144,13 +144,10 @@ class LoginHandler(BaseHandler):
       logging.info(record[0].password)
       logging.info(base64.b64encode(user_password))
       logging.info(user_password)
-<<<<<<< HEAD
     if (base64.b64encode(user_password) == record[0].password):
       template_values = {'login': True, 'user': record[0].email}
-=======
       if(base64.b64encode(user_password) == record[0].password):
         template_values = {'login': True, 'user': record[0].email}
->>>>>>> ef60a8fb1d0e9932ec61e3dc0dd97cba32188e07
     if (not is_valid):
       errors.append('Wrong Username / Password!')
       template_values = {'errors': '<br/>'.join(errors), 'login': True}
