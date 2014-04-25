@@ -110,7 +110,7 @@ class VerifyHandler(BaseHandler):
     #Problem : how to differetiate old and new uuid's ?
     user_uuidg = self.request.get('uuid')
     logging.info(user_uuidg)
-    if ((user_uuid and user_uuidg) and (database.Verify.is_verify == False)):
+    if ((database.Verify.uuid and user_uuidg) and (database.Verify.is_verify == False)):
       database.Verify(email = user_email, uuid = user_uuid, is_verify = True).put();
       success = []
       success.append("Verification Successfull!")
@@ -181,17 +181,13 @@ class ForgotHandler(BaseHandler):
     Hello, Please tap the following link to change password.
     http://cloud-mania.appspot.com/reset?uuid=%s\n\n""" % (user_uuid))
       template_values = {'reset': True, 'forgot': True}
-      self.redirect('/change')
+      self.redirect('/reset')
     template_values = {'errors': '<br/>'.join(errors), "email":"", "password":""}
     showIndex(self, template_values)
 
-<<<<<<< HEAD
+
 class ResetHandler(BaseHandler):
   
-=======
-class ChangeHandler(BaseHandler):
-
->>>>>>> cf0d2cbc4775fc468dd8d297afa83108496a61fd
   def get(self):
     success = []
     errors = []
@@ -267,7 +263,7 @@ app = webapp2.WSGIApplication([
     ('/register', RegisterHandler),
     ('/login', LoginHandler),
     ('/forgot', ForgotHandler),
-    ('/reset', ResetHandler)
+    ('/reset', ResetHandler),
     ('/change', ChangepasswordHandler),
     ('/logout', LogoutHandler)
 ], debug=True, config=CONFIG)
