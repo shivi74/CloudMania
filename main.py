@@ -176,7 +176,7 @@ class ForgotHandler(BaseHandler):
     Hello, Please tap the following link to change password.
     http://cloud-mania.appspot.com/reset?uuid=%s\n\n""" % (user_uuid))
       template_values = {'reset': True, 'forgot': True}
-      self.redirect('/change')
+      self.redirect('/reset')
     template_values = {'errors': '<br/>'.join(errors), "email":"", "password":""}
     showIndex(self, template_values)
 
