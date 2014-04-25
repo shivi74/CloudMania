@@ -181,7 +181,7 @@ class ForgotHandler(BaseHandler):
     showIndex(self, template_values)
 
 
-class ChangeHandler(BaseHandler):
+class ResetHandler(BaseHandler):
   def get(self):
     success = []
     errors = []
@@ -258,7 +258,7 @@ app = webapp2.WSGIApplication([
     ('/register', RegisterHandler),
     ('/login', LoginHandler),
     ('/forgot', ForgotHandler),
-    ('/reset', ResetHandler)
+    ('/reset', ResetHandler),
     ('/change', ChangepasswordHandler),
     ('/logout', LogoutHandler)
 ], debug=True, config=CONFIG)
