@@ -74,7 +74,9 @@ class RegisterHandler(BaseHandler):
       #New "uuid" field added to user database
       user_uuid = str(uuid.uuid5(uuid.NAMESPACE_URL, 'user_email'))
       logging.info(user_uuid)
-      database.User(email = user_email, password = base64.b64encode(user_password), uuid = user_uuid).put()
+      user_obj = database.User(key_name = user_email, email = user_email, password = base64.b64encode(user_password), is_verify = False)
+      user_obj.put()
+      database.Verify(user=user_obj, uuid=user_uuid).put()
       sender = 'shivani.9487@gmail.com'
       to = user_email
       mail.send_mail(sender = sender,
@@ -102,20 +104,21 @@ class RegisterHandler(BaseHandler):
 class VerifyHandler(BaseHandler):
 
   def get(self):
+    errors = []
     logging.info(self.request)
-    user_email = self.request.get('email')
-    #Old uuid taken from user database
-    user_uuid = database.User.uuid
-    database.Verify(email = user_email, uuid = user_uuid, is_verify= False).put();
     user_uuidg = self.request.get('uuid')
-    logging.info(user_uuidg)
-    if ((database.Verify.uuid and user_uuidg) and (database.Verify.is_verify == False)):
-      database.Verify(email = user_email, uuid = user_uuid, is_verify = True).put();
+    verify_obj = database.Verify.all()
+    verify_obj.filter("uuid =", user_uuidg)
+    counter = verify_obj.count(limit=1)
+    if (counter == 0):
+      errors.append("No entry of user in database.")
+    else:
+      verify_objs = verify_obj.run(limit=1)[0]
+      verify_objs.user.is_verify = True
+      verify_objs.user.put()
       success = []
       success.append("Verification Successfull!")
-    else:
-      errors = []
-      if(not database.Verify.is_verify):
+    if(not database.Verify.is_verify):
         errors.append("User not Verified!")
     template_values = {"errors": "<br/>".join(errors),"email":""}
     showIndex(self, template_values)
