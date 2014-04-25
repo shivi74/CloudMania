@@ -84,7 +84,7 @@ class RegisterHandler(BaseHandler):
                          Dear User:
                          Hello, Thank you for registering in cloudmania.
                          Please tap the following link to complete the email registration process.
-                         http://www.cloudmania.in/verify?%s\n\n""" % (user_uuid))
+                         http://www.cloudmania.appspot.com/verify?uuid=%s\n\n""" % (user_uuid))
       self.redirect('/login#banner')
       return
     else:
@@ -102,9 +102,6 @@ class RegisterHandler(BaseHandler):
 class VerifyHandler(BaseHandler):
 
   def get(self):
-    self.redirect('/')
-
-  def post(self):
     logging.info(self.request)
     user_email = self.request.get('email')
     #Old uuid taken from user database
@@ -164,31 +161,58 @@ class ForgotHandler(BaseHandler):
 
   def post(self):
     success = []
+    errors = []
     logging.info(self.request)
     user_email = self.request.get('email')
-    user_uuid = uuid.uuid5(uuid.NAMESPACE_DNS, 'user_email')
-    logging.info(user_uuid)
-    errors = []
-    database.Forgot(email = user_email, uuid = user_uuid, is_viewed = False).put();
-    template_values = {'reset': True}
-    mail.send_mail(sender='shivani.9487@gmail.com',
+    is_valid = utils.valid_email(user_email)
+    if (not is_valid):
+      errors.append('Wrong email-id!')
+      template_values = {'errors': '<br/>'.join(errors), 'forgot': True}
+    if ( is_valid ):
+      user_uuid = str(uuid.uuid5(uuid.NAMESPACE_DNS, 'user_email'))
+      logging.info(user_uuid)
+      database.Forgot(email = user_email, uuid = user_uuid, is_viewed = False).put();
+      mail.send_mail(sender='shivani.9487@gmail.com',
               to = user_email,
               subject="CloudMania Reset Password",
               body="""
     Dear User,
 
     Hello, Please tap the following link to change password.
-    http://www.cloudmania.in/forgotpassword?%s\n\n""" % (user_uuid)
+    http://www.cloudmania.appspot.com/reset?uuid=%s\n\n""" % (user_uuid))
+      template_values = {'reset': True, 'forgot': True}
+      user_uuidg = self.request.get('user_uuid')
+      logging.info(user_uuidg)
+      if (user_uuid and str(user_uuidg)):
+        user_password = self.request.get('password','')
+        user_cpassword = self.request.get('confirmpassword','')
+        if (user_password and user_cpassword):
+          success.append("Password Changed !")
+          database.User(email = user_email, password = base64.b64encode(user_password)).put();
+          database.Forgot(email = user_email, password = base64.b64encode(user_password), uuid = user_uuid, is_viewed = True).put();
+        else:
+          errors.append("Password don't match!")
+        self.redirect('/login')
+      else:
+        if(not database.Forgot.is_viewed):
+          errors.append("Password cannot be changed!")
+    template_values = {'errors': '<br/>'.join(errors), "email":"", "password":""}
+    showIndex(self, template_values)
 
-    )
-    logging.info(mail.send_mail)
-    user_uuidg = self.request.get('user_uuid')
+class ChangeHandler(BaseHandler):
+  
+  def get(self):
+    logging.info(self.request)
+    user_email = self.request.get('email')
+    template_values = {'reset': True, 'forgot': True}
+    user_uuidg = self.request.get('uuid')
     logging.info(user_uuidg)
-    if (user_uuid and user_uuidg):
+    if (database.Forgot.uuid and str(user_uuidg)):
       user_password = self.request.get('password','')
       user_cpassword = self.request.get('confirmpassword','')
       if (user_password and user_cpassword):
         success.append("Password Changed !")
+        database.User(email = user_email, password = base64.b64encode(user_password)).put();
         database.Forgot(email = user_email, password = base64.b64encode(user_password), uuid = user_uuid, is_viewed = True).put();
       else:
         errors.append("Password don't match!")
@@ -198,8 +222,7 @@ class ForgotHandler(BaseHandler):
         errors.append("Password cannot be changed!")
     template_values = {'errors': '<br/>'.join(errors), "email":"", "password":""}
     showIndex(self, template_values)
-
-
+    
 class ChangepasswordHandler(BaseHandler):
 
   def get(self):

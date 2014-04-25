@@ -37,16 +37,16 @@
 		
 		<!-- Banner -->
     <section id="banner">
-	      {% if not user %}
+	{% if not forgot %}
+		{% if not user %}
 				<header>
 					<h2 id="register-header">Don't have an account? Sign Up Below</h2>
 				</header>
-        {% endif %}
+		{% endif %}
         {% if errors %}
-		<p>{{ errors }}</p>
         	{{ errors|safe }}
         {% endif %}
-        {% if not user %}
+		{% if not user %}
         <form action="/register#banner" method="post">
           <div><input type="text" class="text" name="email" placeholder="Email"></div>
           <div><input type="password" class="text" name="password" placeholder="Password"></div>
@@ -55,28 +55,28 @@
           <input type="button" class="button style2" value="Already Registered?" name="login" />
 	  <div><a href="/forgot">Forgot password?</a></div>
         </form>
-        {% else %}
+		{% else %}
         	<h2>Welcome, {{user}}</h2>
 		<br>
 		<input type="button" class="button style2" value="Add Site" name="addsite" />
 		<a class="button style2" href="/changepassword">Change Password</a>
-		{% if changepassword %}
+			{% if changepassword %}
 			<form action="/changepassword#banner" method="post">
 			  <div><input type="password" class="text" name="password" placeholder="Password"></div>
 			  <div><input type="password" class="text" name="newpassword" placeholder="New Password"></div>
 			  <div><input type="password" class="text" name="confirmpassword" placeholder="Confirm Password"></div>
 			  <input type="submit" class="button style2" value="Change Password" name="change_password" />
 			</form>
-		{% endif %}
+			{% endif %}
 		<br>
 		<a href="/logout">Logout</a>
-        {% endif %}
-        {% if login %}
+		{% endif %}
+		{% if login %}
         <script>
         	alreadyRegistered();
         </script>
-        {% endif %}
-	{% if forgot %}
+		{% endif %}
+	{% else %}
 	<header>
 		<h2 id="forgot-header">Forgot Password</h2>
 	</header>
