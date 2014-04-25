@@ -77,15 +77,16 @@
         </script>
 		{% endif %}
 	{% else %}
+		{% if not reset %}
 	<header>
 		<h2 id="forgot-header">Forgot Password</h2>
 	</header>
-	<form action="/forgot#banner" method="post">
+	<form action="/forgot" method="post">
 	  <div><input type="text" class="text" name="email" placeholder="Email"></div>
 	  <input type="submit" class="button style2" value="Reset Password" name="reset" />
 	</form>
-		{% if reset %}
-		<form action="/reset#banner" method="post">
+		{% else %}
+		<form action="/change" method="post">
 		  <div><input type="password" class="text" name="password" placeholder="Password"></div>
 		  <div><input type="password" class="text" name="confirmpassword" placeholder="Confirm Password"></div>
 		  <input type="button" class="button style2" value="Change Password" name="changepassword" />
