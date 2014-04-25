@@ -103,11 +103,6 @@ class VerifyHandler(BaseHandler):
 
   def get(self):
     logging.info(self.request)
-    user_email = self.request.get('email')
-    #Old uuid taken from user database
-    user_uuid = database.User.uuid
-    database.Verify(email = user_email, uuid = user_uuid, is_verify= False).put();
-    #Problem : how to differetiate old and new uuid's ?
     user_uuidg = self.request.get('uuid')
     logging.info(user_uuidg)
     if ((user_uuid and user_uuidg) and (database.Verify.is_verify == False)):
