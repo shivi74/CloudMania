@@ -84,7 +84,7 @@ class RegisterHandler(BaseHandler):
                          Dear User:
                          Hello, Thank you for registering in cloudmania.
                          Please tap the following link to complete the email registration process.
-                         http://www.cloudmania.appspot.com/verify?uuid=%s\n\n""" % (user_uuid))
+                         http://cloud-mania.appspot.com/verify?uuid=%s\n\n""" % (user_uuid))
       self.redirect('/login#banner')
       return
     else:
@@ -179,7 +179,7 @@ class ForgotHandler(BaseHandler):
     Dear User,
 
     Hello, Please tap the following link to change password.
-    http://www.cloudmania.appspot.com/reset?uuid=%s\n\n""" % (user_uuid))
+    http://cloud-mania.appspot.com/reset?uuid=%s\n\n""" % (user_uuid))
       template_values = {'reset': True, 'forgot': True}
       user_uuidg = self.request.get('user_uuid')
       logging.info(user_uuidg)
@@ -200,7 +200,7 @@ class ForgotHandler(BaseHandler):
     showIndex(self, template_values)
 
 class ChangeHandler(BaseHandler):
-  
+
   def get(self):
     logging.info(self.request)
     user_email = self.request.get('email')
@@ -222,7 +222,7 @@ class ChangeHandler(BaseHandler):
         errors.append("Password cannot be changed!")
     template_values = {'errors': '<br/>'.join(errors), "email":"", "password":""}
     showIndex(self, template_values)
-    
+
 class ChangepasswordHandler(BaseHandler):
 
   def get(self):
