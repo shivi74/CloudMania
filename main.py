@@ -170,7 +170,7 @@ class ForgotHandler(BaseHandler):
     if (not is_valid):
       errors.append('Wrong email-id!')
       template_values = {'errors': '<br/>'.join(errors), 'forgot': True}
-    if ( is_valid ):
+    if (is_valid):
       user_uuid = str(uuid.uuid5(uuid.NAMESPACE_DNS, 'user_email'))
       logging.info(user_uuid)
       database.Forgot(email = user_email, uuid = user_uuid, is_viewed = False).put();
@@ -183,24 +183,30 @@ class ForgotHandler(BaseHandler):
     Hello, Please tap the following link to change password.
     http://cloud-mania.appspot.com/reset?uuid=%s\n\n""" % (user_uuid))
       template_values = {'reset': True, 'forgot': True}
+      user_password = self.request.get('password','')
+      user_cpassword = self.request.get('confirmpassword','')
       self.redirect('/reset')
-    template_values = {'errors': '<br/>'.join(errors), "email":"", "password":""}
+    template_values = {'errors': '<br/>'.join(errors), "email":"", "password":"", "confirmpassword":"", 'forgot': True, 'reset': True}
     showIndex(self, template_values)
 
 
 class ResetHandler(BaseHandler):
   
   def get(self):
-    success = []
-    errors = []
     logging.info(self.request)
     user_email = self.request.get('email')
-    template_values = {'reset': True, 'forgot': True}
+    user_uuid = database.Forgot.uuid
+    user_password = self.request.get('password','')
+    user_cpassword = self.request.get('confirmpassword','')
+    template = JINJA_ENVIRONMENT.get_template('index.html')
+    self.response.write(template.render({'forgot': True, 'reset': True, "email":"", "password":"", "confirmpassword":""}))
+    
+  def post(self):
+    success = []
+    errors = []
     user_uuidg = self.request.get('uuid')
     logging.info(user_uuidg)
     if (database.Forgot.uuid and str(user_uuidg)):
-      user_password = self.request.get('password','')
-      user_cpassword = self.request.get('confirmpassword','')
       if ((user_password and user_cpassword) and database.Forgot.is_viewed == False):
         success.append("Password Changed !")
         database.User(email = user_email, password = base64.b64encode(user_password)).put();
@@ -214,12 +220,13 @@ class ResetHandler(BaseHandler):
         errors.append("Password cannot be changed!")
     template_values = {'errors': '<br/>'.join(errors), "email":"", "password":""}
     showIndex(self, template_values)
+  
 
 class ChangepasswordHandler(BaseHandler):
 
   def get(self):
     template = JINJA_ENVIRONMENT.get_template('index.html')
-    self.response.write(template.render({'changepassword': True}))
+    self.response.write(template.render({'user': True, 'changepassword': True}))
 
   def post(self):
     logging.info(self.request)
@@ -239,7 +246,7 @@ class ChangepasswordHandler(BaseHandler):
         errors.append("Password don't match!")
     else:
       errors.append("Old Password don't match!")
-      template_values = {'errors': '<br/>'.join(errors), 'changepassword': True}
+      template_values = {'errors': '<br/>'.join(errors),'user': True, 'changepassword': True}
     showIndex(self, template_values)
 
 

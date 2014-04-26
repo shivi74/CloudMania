@@ -56,6 +56,7 @@
 	  <div><a href="/forgot">Forgot password?</a></div>
         </form>
 		{% else %}
+			
         	<h2>Welcome, {{user}}</h2>
 		<br>
 		<input type="button" class="button style2" value="Add Site" name="addsite" />
@@ -81,12 +82,15 @@
 	<header>
 		<h2 id="forgot-header">Forgot Password</h2>
 	</header>
-	<form action="/forgot" method="post">
+	<form action="/forgot#banner" method="post">
 	  <div><input type="text" class="text" name="email" placeholder="Email"></div>
 	  <input type="submit" class="button style2" value="Reset Password" name="reset" />
 	</form>
 		{% else %}
-		<form action="/reset" method="post">
+		<header>
+			<h2 id="forgot-header">Forgot Password</h2>
+		</header>
+		<form action="/reset#banner" method="get">
 		  <div><input type="password" class="text" name="password" placeholder="Password"></div>
 		  <div><input type="password" class="text" name="confirmpassword" placeholder="Confirm Password"></div>
 		  <input type="button" class="button style2" value="Change Password" name="changepassword" />
