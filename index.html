@@ -34,7 +34,7 @@
 					<a href="#banner" class="button style2 scrolly scrolly-centered">Try it now</a>
 				</footer>
 			</section>
-		
+
 		<!-- Banner -->
     <section id="banner">
 	{% if success %}
@@ -59,12 +59,12 @@
 	  <div><a href="/forgot">Forgot password?</a></div>
         </form>
 		{% else %}
-		{% if not changepassword and not addsite %}	
+		{% if not changepassword and not addsite %}
         	<h2>Welcome, {{user}}</h2>
 		<br>
 		<a class="button style2" href="/addsite">Add Site</a>
 		<a class="button style2" href="/changepassword">Change Password</a>
-		{% if not connect %}
+		{% if not is_connected %}
 			<a class="button style2" href="/connect">Connect Dropbox</a>
 		{% else %}
 			<a class="button style2" href="/disconnect">Disconnect Dropbox</a>
@@ -81,7 +81,7 @@
 			  <input type="submit" class="button style2" value="Change Password" name="change_password" />
 			</form>
 			{% endif %}
-			
+
 			{% if addsite %}
 			<header>
 			  <h2 id="addsite-header">Add Site</h2>
@@ -92,7 +92,7 @@
 			  <div><input type="text" class="text" name="siteID" placeholder="Site ID"></div>
 			  <input type="submit" class="button style2" value="Add Site" name="addsite" />
  			</form>
-			
+
 			{% endif %}
 		<br>
 		<a href="/logout">Logout</a>
@@ -106,7 +106,7 @@
 		{% if not reset %}
 	{% if not message %}
 	<header>
-		<h2 id="forgot-header">Forgot Password</h2>	
+		<h2 id="forgot-header">Forgot Password</h2>
 	</header>
 	<form action="/forgot#banner" method="post">
 	  <div><input type="text" class="text" name="email" placeholder="Email"></div>
@@ -128,9 +128,9 @@
 		</form>
 		{% endif %}
 	{% endif %}
-	
+
       </section>
-		
+
 		{% if not user %}
 		<!-- Feature 1 -->
 			<article id="first" class="container box style1 right">
@@ -143,7 +143,7 @@
 					<p>Register to CloudMania, Login your Dropbox Account than Simply take your existing HTML website, specify the editable areas then copy it to Dropbox. You now have a live website with a CMS your client use.</p>
 				</div>
 			</article>
-		
+
 		<!-- Feature 2 -->
 			<article class="container box style1 left">
 				<a href="http://ineedchemicalx.deviantart.com/art/Kingdom-of-the-Wind-348268044" class="image full"><img src="images/pic02.jpg" alt="" /></a>
@@ -184,7 +184,7 @@
 					</div>
 				</form>
 			</article>
-		
+
 		<!-- Generic -->
 		<!--
 			<article class="container box style3">
@@ -197,9 +197,9 @@
 						<h3>Paragraph</h3>
 						<p>This is a byline</p>
 					</header>
-					<p>Phasellus nisl nisl, varius id <sup>porttitor sed pellentesque</sup> ac orci. Pellentesque 
-					habitant <strong>strong</strong> tristique <b>bold</b> et netus <i>italic</i> malesuada <em>emphasized</em> ac turpis egestas. Morbi 
-					leo suscipit ut. Praesent <sub>id turpis vitae</sub> turpis pretium ultricies. Vestibulum sit 
+					<p>Phasellus nisl nisl, varius id <sup>porttitor sed pellentesque</sup> ac orci. Pellentesque
+					habitant <strong>strong</strong> tristique <b>bold</b> et netus <i>italic</i> malesuada <em>emphasized</em> ac turpis egestas. Morbi
+					leo suscipit ut. Praesent <sub>id turpis vitae</sub> turpis pretium ultricies. Vestibulum sit
 					amet risus elit.</p>
 				</section>
 				<section>
@@ -213,16 +213,16 @@
 					<header>
 						<h3>Divider</h3>
 					</header>
-					<p>Donec consectetur <a href="#">vestibulum dolor et pulvinar</a>. Etiam vel felis enim, at viverra 
-					ligula. Ut porttitor sagittis lorem, quis eleifend nisi ornare vel. Praesent nec orci 
-					facilisis leo magna. Cras sit amet urna eros, id egestas urna. Quisque aliquam 
-					tempus euismod. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices 
+					<p>Donec consectetur <a href="#">vestibulum dolor et pulvinar</a>. Etiam vel felis enim, at viverra
+					ligula. Ut porttitor sagittis lorem, quis eleifend nisi ornare vel. Praesent nec orci
+					facilisis leo magna. Cras sit amet urna eros, id egestas urna. Quisque aliquam
+					tempus euismod. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
 					posuere cubilia.</p>
 					<hr />
-					<p>Donec consectetur vestibulum dolor et pulvinar. Etiam vel felis enim, at viverra 
-					ligula. Ut porttitor sagittis lorem, quis eleifend nisi ornare vel. Praesent nec orci 
-					facilisis leo magna. Cras sit amet urna eros, id egestas urna. Quisque aliquam 
-					tempus euismod. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices 
+					<p>Donec consectetur vestibulum dolor et pulvinar. Etiam vel felis enim, at viverra
+					ligula. Ut porttitor sagittis lorem, quis eleifend nisi ornare vel. Praesent nec orci
+					facilisis leo magna. Cras sit amet urna eros, id egestas urna. Quisque aliquam
+					tempus euismod. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
 					posuere cubilia.</p>
 				</section>
 				<section>
@@ -341,7 +341,7 @@
 				</section>
 			</article>
 		-->
-		
+
 		<section id="footer">
 			<ul class="icons">
 				<li><a href="#" class="fa fa-twitter solo"><span>Twitter</span></a></li>
