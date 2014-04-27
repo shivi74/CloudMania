@@ -171,11 +171,13 @@ class LoginHandler(BaseHandler):
 class HomeHandler(BaseHandler):
 
   def get(self):
-    user_obj = self.session.get('user')
+    user_email = self.session.get('user')
+    user_obj = getUser(user_email)
     if( not user_obj):
       self.redirect('/login')
     template = JINJA_ENVIRONMENT.get_template('index.html')
-    self.response.write(template.render({'user': True}))
+    self.response.write(template.render({'user': True,
+                                         'is_connected': user_obj.access_token}))
 
   def post(self):
     user_obj = self.session.get('user')
@@ -361,6 +363,15 @@ class ConnectDropboxHandler(BaseHandler):
     self.redirect(authorize_url)
 
 
+class DisconnectDropboxHandler(BaseHandler):
+  def get(self):
+    user_email = self.session.get('user')
+    user_obj = getUser(user_email)
+    user_obj.access_token = None
+    user_obj.put()
+    self.redirect('/home#banner')
+
+
 class OAuthDropboxHandler(BaseHandler):
   def get(self):
     user_email = self.session.get('user')
@@ -391,7 +402,7 @@ class OAuthDropboxHandler(BaseHandler):
     user_obj = getUser(user_email)
     user_obj.access_token = access_token
     user_obj.put()
-    self.response.out.write(self.request)
+    self.redirect('/home#banner')
 
 
 app = webapp2.WSGIApplication([
@@ -406,5 +417,6 @@ app = webapp2.WSGIApplication([
     ('/addsite', AddsiteHandler),
     ('/logout', LogoutHandler),
     ('/connect', ConnectDropboxHandler),
-    ('/oauth', OAuthDropboxHandler)
+    ('/oauth', OAuthDropboxHandler),
+    ('/disconnect', DisconnectDropboxHandler)
 ], debug=True, config=CONFIG)
