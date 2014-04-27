@@ -163,28 +163,21 @@ class ForgotHandler(BaseHandler):
     logging.info(self.request)
     user_email = self.request.get('email')
     is_valid = utils.valid_email(user_email)
-    is_exist = database.User.all().filter("email =", user_email)
-    if (not is_exist):
+    user_all = database.User.all().filter("email =", user_email)
+    total = user_all.count(limit=1)
+    if (total == 0):
       errors.append('email-id not registered!')
       template_values = {'errors': '<br/>'.join(errors), 'forgot': True}
     if (not is_valid):
       errors.append('Wrong email-id!')
       template_values = {'errors': '<br/>'.join(errors), 'forgot': True}
-    if (is_valid and is_exist):
+    if (is_valid and not total):
       user_uuid = str(uuid.uuid1())
       logging.info(user_uuid)
-      reset_all = database.Forgot.all()
-      reset_all.filter("uuid =", user_uuid)
-      counter = reset_all.count(limit=1)
-      if (counter == 0):
-        errors.append("No entry of uuid in database.")
-      else:
-        reset_records = reset_all.run(limit=1)
-        success = []
-        for reset_record in reset_records:
-          reset_record.user.email = user_email
-          reset_record.user.is_verify = True
-          reset_record.user.put()
+      user_obj = None
+      for user_rec in user_all.run(limit=1):
+        user_obj = user_rec
+      database.Forgot(user=user_obj, uuid=user_uuid).put()
       mail.send_mail(sender='shivani.9487@gmail.com',
               to = user_email,
               subject="CloudMania Reset Password",
