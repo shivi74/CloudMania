@@ -81,7 +81,7 @@
 			<header>
 			  <h2 id="addsite-header">Add Site</h2>
 			</header>
-			<form action="/addsite" method="post">
+			<form action="/addsite#banner" method="post">
 			  <div><input type="text" class="text" name="sitename" placeholder="Site name"></div>
 			  www.cloudmania.in/*reserved*/
 			  <div><input type="text" class="text" name="siteID" placeholder="Site ID"></div>
@@ -99,13 +99,19 @@
 		{% endif %}
 	{% else %}
 		{% if not reset %}
+	{% if not message %}
 	<header>
 		<h2 id="forgot-header">Forgot Password</h2>
+		
 	</header>
 	<form action="/forgot#banner" method="post">
 	  <div><input type="text" class="text" name="email" placeholder="Email"></div>
 	  <input type="submit" class="button style2" value="Reset Password" name="reset" />
 	</form>
+	{% else %}
+		Mail sent on your email address to reset password!!<br>
+		<a class="button style2" href="/login#banner">Login</a>
+	{% endif %}
 		{% else %}
 		<header>
 			<h2 id="forgot-header">Forgot Password</h2>
@@ -113,6 +119,7 @@
 		<form action="/reset#banner" method="post">
 		  <div><input type="password" class="text" name="password" placeholder="Password"></div>
 		  <div><input type="password" class="text" name="confirmpassword" placeholder="Confirm Password"></div>
+		  <div><input type="hidden" value="{{uuid}}" name="uuid" /></div>
 		  <input type="submit" class="button style2" value="Change Password" name="changepassword1" />
 		</form>
 		{% endif %}

@@ -182,11 +182,8 @@ class ForgotHandler(BaseHandler):
     Hello, Please tap the following link to change password.
     http://cloud-mania.appspot.com/reset?uuid=%s\n\n""" % (user_uuid))
       logging.info(user_uuid)
-      template_values = {'reset': True, 'forgot': True}
-      user_password = self.request.get('password','')
-      user_cpassword = self.request.get('confirmpassword','')
-      self.redirect('/reset#banner')
-    template_values = {'errors': '<br/>'.join(errors), "email":"", "password":"", "confirmpassword":"", 'forgot': True, 'reset': True}
+      template_values = {'message': True}
+    template_values = {'errors': '<br/>'.join(errors), "email":"", "password":"", "confirmpassword":"", 'forgot': True, 'message': True}
     showIndex(self, template_values)
 
 
@@ -199,7 +196,7 @@ class ResetHandler(BaseHandler):
     user_password = self.request.get('password','')
     user_cpassword = self.request.get('confirmpassword','')
     template = JINJA_ENVIRONMENT.get_template('index.html')
-    self.response.write(template.render({'forgot': True, 'reset': True, "email":"", "password":"", "confirmpassword":""}))
+    self.response.write(template.render({'forgot': True, 'reset': True, "email":"", "password":"", "confirmpassword":"", "uuid":""}))
     
   def post(self):
     success = []
@@ -219,7 +216,7 @@ class ResetHandler(BaseHandler):
     else:
       if(not database.Forgot.is_viewed):
         errors.append("Password cannot be changed!")
-    template_values = {'errors': '<br/>'.join(errors), "email":"", "password":""}
+    template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), "email":"", "password":""}
     showIndex(self, template_values)
   
 
