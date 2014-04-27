@@ -51,7 +51,7 @@ class BaseHandler(webapp2.RequestHandler):
     return self.session_store.get_session()
 
 class MainPage(BaseHandler):
-    
+
   def get(self):
       showIndex(self, {})
 
@@ -113,16 +113,13 @@ class VerifyHandler(BaseHandler):
       errors.append("No entry of uuid in database.")
     else:
       verify_records = verify_all.run(limit=1)
-      verify_record = verify_records[0]
-      verify_record.is_verify = True
-      verify_records.put()
       success = []
-      success.append("Verification Successfull!")
-    if(not database.Verify.is_verify):
-        errors.append("User not Verified!")
+      for verify_record in verify_records:
+        verify_record.user.is_verify = True
+        verify_record.user.put()
+        success.append("Verification Successfull!")
     template_values = {"success": '<br/>'.join(success), "errors": "<br/>".join(errors)}
     showIndex(self, template_values)
-    self.redirect('/login')
 
 class LoginHandler(BaseHandler):
 
@@ -192,13 +189,13 @@ class ForgotHandler(BaseHandler):
 
 
 class ResetHandler(BaseHandler):
-  
+
   def get(self):
     logging.info(self.request)
     template = JINJA_ENVIRONMENT.get_template('index.html')
     user_uuidg = self.request.get('uuid')
     self.response.write(template.render({'forgot': True, 'reset': True, "uuid": user_uuidg}))
-    
+
   def post(self):
     success = []
     errors = []
@@ -225,7 +222,7 @@ class ResetHandler(BaseHandler):
       self.redirect('/login')
     template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), "email":"", "password":""}
     showIndex(self, template_values)
-  
+
 
 class ChangepasswordHandler(BaseHandler):
 
@@ -255,11 +252,11 @@ class ChangepasswordHandler(BaseHandler):
     showIndex(self, template_values)
 
 class AddsiteHandler(BaseHandler):
-    
+
   def get(self):
     template = JINJA_ENVIRONMENT.get_template('index.html')
     self.response.write(template.render({'user': True, 'addsite': True}))
-    
+
   def post(self):
     logging.info(self.request)
     user = self.session.get('user')
