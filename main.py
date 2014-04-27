@@ -244,7 +244,7 @@ class ResetHandler(BaseHandler):
     if (counter == 0):
       errors.append("No entry of uuid in database.")
     else:
-      if (user_password == user_cpassword):
+      if ((user_password == user_cpassword) and (user_password == user_cpassword)):
         reset_record = reset_all.get()
         reset_record.user.password = base64.b64encode(user_password)
         reset_record.user.put()
