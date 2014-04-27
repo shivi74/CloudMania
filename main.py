@@ -281,11 +281,12 @@ class ChangepasswordHandler(BaseHandler):
     errors = []
     success = []
     user_password = self.request.get('password', '')
-    if (user_obj.password and user_password):
+    change_obj = getUser(user_obj)
+    if (change_obj.password and user_password):
       user_npassword = self.request.get('npassword', '')
       user_cpassword = self.request.get('confirmpassword', '')
       if (user_npassword and user_cpassword):
-        database.User(password = user_npassword)
+        change_obj.put()
         success.append("Password changed !")
         mail.send_mail(sender='shivani.9487@gmail.com',
               to = user_email,
