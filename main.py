@@ -10,7 +10,7 @@ import datetime
 import smtplib
 import database
 import utils
-import dropbox
+from dropbox.client import DropboxClient, DropboxOAuth2Flow
 
 
 from google.appengine.api import users
@@ -21,6 +21,10 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
+
+# Fill these in!
+DROPBOX_APP_KEY = 'nyoq9i1tlltl0si'
+DROPBOX_APP_SECRET = '3x51jbmxlegpcnv'
 
 CONFIG = {}
 CONFIG['webapp2_extras.sessions'] = dict(secret_key='cloudmaniadotcom')
@@ -343,6 +347,50 @@ class LogoutHandler(BaseHandler):
     template_values = {'logout': True}
     showIndex(self, template_values)
 
+def get_dropbox_auth_flow(session):
+  return DropboxOAuth2Flow(DROPBOX_APP_KEY, DROPBOX_APP_SECRET,
+                           'http://localhost:8080/oauth', session,
+                           'dropbox-auth-csrf-token')
+
+
+class ConnectDropboxHandler(BaseHandler):
+  def get(self):
+    authorize_url = get_dropbox_auth_flow(self.session).start()
+    self.redirect(authorize_url)
+
+
+class OAuthDropboxHandler(BaseHandler):
+  def get(self):
+    user = self.session.get('user')
+    logging.info(self.request)
+    request_obj = {'state': self.request.get('state'),
+                   'code': self.request.get('code')}
+    try:
+        access_token, user_id, url_state = get_dropbox_auth_flow(self.session).finish(request_obj)
+    except DropboxOAuth2Flow.BadRequestException, e:
+        logging.info(e)
+        logging.info(400)
+    except DropboxOAuth2Flow.BadStateException, e:
+        logging.info(e)
+        logging.info(400)
+    except DropboxOAuth2Flow.CsrfException, e:
+        logging.info(e)
+        logging.info(403)
+    except DropboxOAuth2Flow.NotApprovedException, e:
+        logging.info(e)
+        logging.info('Not approved?  Why not, bro?')
+        return self.redirect('/home#banner')
+    except DropboxOAuth2Flow.ProviderException, e:
+        logging.info("Auth error" + e)
+        logging.info(403)
+    logging.info(access_token)
+    logging.info(user_id)
+    logging.info(url_state)
+    user.access_token = access_token
+    user.put()
+    self.response.out.write(self.request)
+
+
 app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/register', RegisterHandler),
@@ -353,5 +401,7 @@ app = webapp2.WSGIApplication([
     ('/reset', ResetHandler),
     ('/changepassword', ChangepasswordHandler),
     ('/addsite', AddsiteHandler),
-    ('/logout', LogoutHandler)
+    ('/logout', LogoutHandler),
+    ('/connect', ConnectDropboxHandler),
+    ('/oauth', OAuthDropboxHandler)
 ], debug=True, config=CONFIG)

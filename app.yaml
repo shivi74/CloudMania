@@ -19,6 +19,10 @@ handlers:
 - url: /images
   static_dir: images
 
+- url: /(connect|oauth)
+  script: main.app
+  secure: always
+
 - url: /.*
   script: main.app
 
