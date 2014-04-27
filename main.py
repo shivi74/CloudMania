@@ -1,3 +1,4 @@
+
 import uuid
 import cgi
 import webapp2
@@ -311,7 +312,8 @@ class AddsiteHandler(BaseHandler):
 
   def post(self):
     logging.info(self.request)
-    user_obj = self.session.get('user')
+    user_email = self.session.get('user')
+    user_obj = getUser(user_email)
     errors = []
     success = []
     user_sitename = self.request.get('sitename', '')
@@ -319,12 +321,18 @@ class AddsiteHandler(BaseHandler):
     if( user_siteID == "" ):
       errors.append("Don't forget to give siteID!")
       template_values = {'errors': '<br/>'.join(errors),'user': True, 'addsite' : True}
+      showIndex(self, template_values)
+      return
     idobj = database.Mapping.all()
     idobj.filter("siteID =", user_siteID)
     counter = idobj.count(limit=1)
     if (counter == 0):
       success.append("URL registered!")
-      database.Mapping(sitename = user_sitename, siteID = user_siteID).put()
+      database.Mapping(Sitename = user_sitename, SiteID = user_siteID, user=user_obj).put()
+      client = DropboxClient(user_obj.access_token)
+      logging.info(dir(client))
+      response = client.put_file('%s/index.html' % user_siteID, None)
+      logging.info(response)
       template_values = {'success': '<br/>'.join(success), 'user' : True}
       self.redirect('/home')
     else:

@@ -62,8 +62,10 @@
 		{% if not changepassword and not addsite %}
         	<h2>Welcome, {{user}}</h2>
 		<br>
-		<a class="button style2" href="/addsite">Add Site</a>
-		<a class="button style2" href="/changepassword">Change Password</a>
+        {% if is_connected %}
+		<a class="button style2" href="/addsite#banner">Add Site</a>
+        {% endif %}
+		<a class="button style2" href="/changepassword#banner">Change Password</a>
 		{% if not is_connected %}
 			<a class="button style2" href="/connect">Connect Dropbox</a>
 		{% else %}
@@ -88,7 +90,7 @@
 			</header>
 			<form action="/addsite#banner" method="post">
 			  <div><input type="text" class="text" name="sitename" placeholder="Site name"></div>
-			  www.cloudmania.in/*reserved*/
+                http://cloud-mania.appspot.com/u/
 			  <div><input type="text" class="text" name="siteID" placeholder="Site ID"></div>
 			  <input type="submit" class="button style2" value="Add Site" name="addsite" />
  			</form>

@@ -19,7 +19,8 @@ class Forgot(db.Model):
   uuid = db.StringProperty(required = True)
 
 class Mapping(db.Model):
-  Sitename = db.StringProperty
+  user = db.ReferenceProperty(User)
+  Sitename = db.StringProperty(required=True)
   SiteID = db.StringProperty(required = True)
 
 
