@@ -7,6 +7,7 @@ class User(db.Model):
   password = db.StringProperty(required = True)
   created = db.DateTimeProperty(auto_now_add=True)
   updated = db.DateTimeProperty(auto_now=True)
+  access_token = db.StringProperty()
   is_verify = db.BooleanProperty()
 
 class Verify(db.Model):
