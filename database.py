@@ -20,7 +20,7 @@ class Forgot(db.Model):
 
 class Mapping(db.Model):
   user = db.ReferenceProperty(User)
-  Sitename = db.StringProperty(required=True)
+  Sitename = db.StringProperty()
   SiteID = db.StringProperty(required = True)
 
 
