@@ -17,5 +17,10 @@ class Forgot(db.Model):
   email = db.StringProperty(required = True)
   uuid = db.StringProperty(required = True)
   is_viewed = db.BooleanProperty()
+  
+class Addsite(db.Model):
+  Sitename = db.StringProperty
+  SiteID = db.StringProperty(required = True)
+
 
 

@@ -37,15 +37,18 @@
 		
 		<!-- Banner -->
     <section id="banner">
+	{% if success %}
+		{{ success }}
+        {% endif %}
+	{% if errors %}
+        	{{ errors|safe }}
+        {% endif %}
 	{% if not forgot %}
 		{% if not user %}
 				<header>
 					<h2 id="register-header">Don't have an account? Sign Up Below</h2>
 				</header>
 		{% endif %}
-        {% if errors %}
-        	{{ errors|safe }}
-        {% endif %}
 		{% if not user %}
         <form action="/register#banner" method="post">
           <div><input type="text" class="text" name="email" placeholder="Email"></div>
@@ -56,18 +59,35 @@
 	  <div><a href="/forgot">Forgot password?</a></div>
         </form>
 		{% else %}
-			
+		{% if not changepassword and not addsite %}	
         	<h2>Welcome, {{user}}</h2>
 		<br>
-		<input type="button" class="button style2" value="Add Site" name="addsite" />
+		<a class="button style2" href="/addsite">Add Site</a>
 		<a class="button style2" href="/changepassword">Change Password</a>
+		{% endif %}
 			{% if changepassword %}
+			<header>
+			  <h2 id="changepassword-header">Change Password</h2>
+			</header>
 			<form action="/changepassword#banner" method="post">
 			  <div><input type="password" class="text" name="password" placeholder="Password"></div>
 			  <div><input type="password" class="text" name="newpassword" placeholder="New Password"></div>
 			  <div><input type="password" class="text" name="confirmpassword" placeholder="Confirm Password"></div>
 			  <input type="submit" class="button style2" value="Change Password" name="change_password" />
 			</form>
+			{% endif %}
+			
+			{% if addsite %}
+			<header>
+			  <h2 id="addsite-header">Add Site</h2>
+			</header>
+			<form action="/addsite" method="post">
+			  <div><input type="text" class="text" name="sitename" placeholder="Site name"></div>
+			  www.cloudmania.in/*reserved*/
+			  <div><input type="text" class="text" name="siteID" placeholder="Site ID"></div>
+			  <input type="submit" class="button style2" value="Add Site" name="addsite" />
+ 			</form>
+			
 			{% endif %}
 		<br>
 		<a href="/logout">Logout</a>
@@ -90,16 +110,14 @@
 		<header>
 			<h2 id="forgot-header">Forgot Password</h2>
 		</header>
-		<form action="/reset#banner" method="get">
+		<form action="/reset#banner" method="post">
 		  <div><input type="password" class="text" name="password" placeholder="Password"></div>
 		  <div><input type="password" class="text" name="confirmpassword" placeholder="Confirm Password"></div>
-		  <input type="button" class="button style2" value="Change Password" name="changepassword" />
+		  <input type="submit" class="button style2" value="Change Password" name="changepassword1" />
 		</form>
 		{% endif %}
 	{% endif %}
-	{% if success %}
-		<p>{{ success }}</p>
-        {% endif %}
+	
       </section>
 		
 		{% if not user %}
