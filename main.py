@@ -277,22 +277,6 @@ class ChangepasswordHandler(BaseHandler):
       if (user_npassword and user_cpassword):
         database.User(password = user_npassword)
         success.append("Password changed !")
-    user_npassword = self.request.get('npassword', '')
-    user_cpassword = self.request.get('confirmpassword', '')
-
-    change_all = database.User.all().filter("password =", base64.b64encode(user_password))
-    counter = change_all.count(limit=1)
-    if (user):
-      if (counter == 0):
-        errors.append("Old Password don't match!")
-      else:
-
-        if (user_npassword and user_cpassword):
-          change_record = change_all.get()
-          change_record.user.password = user_npassword
-          change_record.user.put()
-          success = []
-          success.append("Password changed !")
         mail.send_mail(sender='shivani.9487@gmail.com',
               to = user_email,
               subject="CloudMania Password Updated",
