@@ -283,10 +283,10 @@ class ChangepasswordHandler(BaseHandler):
     user_password = self.request.get('password', '')
     change_obj = getUser(user_email)    
     if (change_obj.password and user_password):
-      user_npassword = self.request.get('npassword', '')
+      user_npassword = self.request.get('newpassword', '')
       user_cpassword = self.request.get('confirmpassword', '')
       if (user_npassword and user_cpassword):
-        change_obj.user.put()
+        change_obj.put()
         success.append("Password changed !")
         mail.send_mail(sender='shivani.9487@gmail.com',
               to = user_email,
@@ -302,7 +302,6 @@ class ChangepasswordHandler(BaseHandler):
       errors.append("Old Password don't match!")
       self.redirect('/changepassword')
     template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user' : True}
-    template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user': True}
     showIndex(self, template_values)
 
 class AddsiteHandler(BaseHandler):
@@ -403,7 +402,6 @@ class OAuthDropboxHandler(BaseHandler):
     user_obj.access_token = access_token
     user_obj.put()
     self.redirect('/home#banner')
-
 
 app = webapp2.WSGIApplication([
     ('/', MainPage),
