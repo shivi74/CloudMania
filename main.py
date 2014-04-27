@@ -60,9 +60,9 @@ class RegisterHandler(BaseHandler):
   def get(self):
     user = self.session.get('User')
     if (user):
-      self.redirect('/home')
+      self.redirect('/home#banner')
     else:
-      self.redirect('/')
+      self.redirect('/#banner')
     template = JINJA_ENVIRONMENT.get_template('index.html')
 
   def post(self):
@@ -117,7 +117,7 @@ class VerifyHandler(BaseHandler):
     counter = verify_all.count(limit=1)
     if (counter == 0):
       if (user):
-        self.redirect('/home')
+        self.redirect('/home#banner')
       else:
         errors.append("User not registered!")
     else:
@@ -162,7 +162,7 @@ class LoginHandler(BaseHandler):
     showIndex(self, template_values)
 
 class HomeHandler(BaseHandler):
-    
+
   def get(self):
     user = self.session.get('User')
     template = JINJA_ENVIRONMENT.get_template('index.html')
@@ -178,9 +178,9 @@ class ForgotHandler(BaseHandler):
   def get(self):
     user = self.session.get('User')
     if (user):
-      self.redirect('/home')
+      self.redirect('/home#banner')
     else:
-      self.redirect('/login')
+      self.redirect('/login#banner')
     template = JINJA_ENVIRONMENT.get_template('index.html')
     self.response.write(template.render({'forgot': True}))
 
@@ -218,7 +218,7 @@ class ResetHandler(BaseHandler):
 
   def get(self):
     logging.info(self.request)
-    user_uuidg = self.request.get('uuid') 
+    user_uuidg = self.request.get('uuid')
     template = JINJA_ENVIRONMENT.get_template('index.html')
     self.response.write(template.render({'forgot': True, 'reset': True, "uuid": user_uuidg}))
 
@@ -248,13 +248,13 @@ class ResetHandler(BaseHandler):
 
     Hello, This is to inform you that your CloudMania account's password had been changed successfully.
     Remember to login with new password from now! :)
-    
+
     -Shivani Sharma""")
         template_values = {'success': '<br/>'.join(success), 'forgot': True, 'login': True}
       else:
         errors.append("Password don't match!")
         template_values = {'errors': '<br/>'.join(errors), 'forgot': True, 'reset': True}
-      self.redirect('/login')
+      self.redirect('/login#banner')
     template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors)}
     showIndex(self, template_values)
 
@@ -271,7 +271,7 @@ class ChangepasswordHandler(BaseHandler):
     errors = []
     success = []
     user_password = self.request.get('password', '')
-    
+
     change_all = database.User.all().filter("password =", base64.b64encode(user_password))
     counter = change_all.count(limit=1)
     if (user):
@@ -294,7 +294,7 @@ class ChangepasswordHandler(BaseHandler):
 
     Hello, This is to inform you that your CloudMania account's password had been updated successfully.
     Remember to login with new password from now! :)
-    
+
     -Shivani Sharma""")
       template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors)}
     showIndex(self, template_values)
@@ -312,7 +312,7 @@ class AddsiteHandler(BaseHandler):
     success = []
     user_sitename = self.request.get('sitename', '')
     user_siteID = self.request.get('siteID', '')
-    if( user_siteID == "" ): 
+    if( user_siteID == "" ):
       errors.append("Don't forget to give siteID!")
       template_values = {'errors': '<br/>'.join(errors),'user': True, 'addsite' : True}
     idobj = database.Mapping.all()
@@ -325,7 +325,7 @@ class AddsiteHandler(BaseHandler):
     else:
       errors.append("ID already exist!! Try another :)")
       template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user' : True,'addsite' : True}
-      self.redirect('/home')
+      self.redirect('/home#banner')
     showIndex(self, template_values)
 
 class LogoutHandler(BaseHandler):
@@ -340,7 +340,7 @@ class LogoutHandler(BaseHandler):
     if user:
       users.create_logout_url(self.request.uri)
     else:
-      self.redirect('/login')
+      self.redirect('/login#banner')
     template_values = {'logout': True}
     showIndex(self, template_values)
 
