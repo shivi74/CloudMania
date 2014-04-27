@@ -270,9 +270,22 @@ class ChangepasswordHandler(BaseHandler):
   def post(self):
     logging.info(self.request)
     user_obj = self.session.get('user')
+    user_email = user_obj.get()
     errors = []
     success = []
     user_password = self.request.get('password', '')
+    
+    change_all = database.User.all()
+    change_all.filter("email =", user_email)
+    counter = change_all.count(limit=1)
+    if (counter == 0):
+        errors.append("User not registered!")
+    else:
+      verify_record = verify_all.get()
+      success = []
+      verify_record.user.is_verify = True
+      verify_record.user.put()
+    
     if (user_obj.password and user_password):
       user_npassword = self.request.get('npassword', '')
       user_cpassword = self.request.get('confirmpassword', '')
