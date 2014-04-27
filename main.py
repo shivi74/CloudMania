@@ -106,20 +106,21 @@ class VerifyHandler(BaseHandler):
     errors = []
     logging.info(self.request)
     user_uuidg = self.request.get('uuid')
-    verify_obj = database.Verify.all()
-    verify_obj.filter("uuid =", user_uuidg)
-    counter = verify_obj.count(limit=1)
+    verify_all = database.Verify.all()
+    verify_all.filter("uuid =", user_uuidg)
+    counter = verify_all.count(limit=1)
     if (counter == 0):
       errors.append("No entry of uuid in database.")
     else:
-      verify_objs = verify_obj.run(limit=1)
-      verify_objs.is_verify = True
-      verify_objs.put()
+      verify_records = verify_all.run(limit=1)
+      verify_record = verify_records[0]
+      verify_record.is_verify = True
+      verify_records.put()
       success = []
       success.append("Verification Successfull!")
     if(not database.Verify.is_verify):
         errors.append("User not Verified!")
-    template_values = {"errors": "<br/>".join(errors),"email":""}
+    template_values = {"success": '<br/>'.join(success), "errors": "<br/>".join(errors)}
     showIndex(self, template_values)
     self.redirect('/login')
 
@@ -161,7 +162,6 @@ class ForgotHandler(BaseHandler):
     self.response.write(template.render({'forgot': True}))
 
   def post(self):
-    success = []
     errors = []
     logging.info(self.request)
     user_email = self.request.get('email')
@@ -187,7 +187,7 @@ class ForgotHandler(BaseHandler):
     http://cloud-mania.appspot.com/reset?uuid=%s\n\n""" % (user_uuid))
       logging.info(user_uuid)
       template_values = {'message': True}
-    template_values = {'errors': '<br/>'.join(errors), "email":"", "password":"", "confirmpassword":"", 'forgot': True, 'message': True}
+    template_values = {'errors': '<br/>'.join(errors), 'forgot': True, 'message': True}
     showIndex(self, template_values)
 
 
@@ -202,26 +202,27 @@ class ResetHandler(BaseHandler):
   def post(self):
     success = []
     errors = []
-    user_email = self.request.get('email')
     user_uuidg = self.request.get('uuid')
     user_password = self.request.get('password','')
     user_cpassword = self.request.get('confirmpassword','')
     logging.info(user_uuidg)
-    reset_obj = database.User.all().filter("email =", user_email)
-    if (database.Forgot.uuid and str(user_uuidg)):
-      if ((user_password and user_cpassword) and database.Forgot.is_viewed == False):
+    reset_all = database.Forgot.all().filter("uuid =", user_uuid)
+    counter = reset_all.count(limit=1)
+    if (counter == 0):
+      errors.append("No entry of uuid in database.")
+    else:
+      reset_records = reset_all.run(limit=1)
+      reset_record = reset_records[0]
+      if (user_password and user_cpassword):
+        reset_record.password = user_password
+        reset_records.put()
         success.append("Password Changed !")
-        template_values = {'success': '<br/>'.join(success), 'forgot': True, 'reset': True}
-        reset_objs = reset_obj.run(limit=1)
-        reset_objs.password = base64.b64encode(user_password).put()
-        database.Forgot(email = user_email, uuid = user_uuid, is_viewed = True).put();
+        template_values = {'success': '<br/>'.join(success), 'forgot': True, 'login': True}
+        database.Forgot(user = reset_all, uuid = user_uuid, is_viewed = True).put();
       else:
         errors.append("Password don't match!")
         template_values = {'errors': '<br/>'.join(errors), 'forgot': True, 'reset': True}
       self.redirect('/login')
-    else:
-      if(not database.Forgot.is_viewed):
-        errors.append("Password cannot be changed!")
     template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), "email":"", "password":""}
     showIndex(self, template_values)
   
@@ -250,7 +251,7 @@ class ChangepasswordHandler(BaseHandler):
         errors.append("Password don't match!")
     else:
       errors.append("Old Password don't match!")
-      template_values = {'errors': '<br/>'.join(errors),'user': True, 'changepassword': True}
+      template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors),'user': True, 'changepassword': True}
     showIndex(self, template_values)
 
 class AddsiteHandler(BaseHandler):
@@ -278,7 +279,7 @@ class AddsiteHandler(BaseHandler):
       template_values = {'success': '<br/>'.join(success), 'user' : True}
     else:
       errors.append("ID already exist!! Try another :)")
-      template_values = {'errors': '<br/>'.join(errors), 'user' : True,'addsite' : True}
+      template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user' : True,'addsite' : True}
       self.redirect('/addsite')
     showIndex(self, template_values)
 
