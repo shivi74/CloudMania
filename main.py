@@ -59,8 +59,8 @@ class MainPage(BaseHandler):
 class RegisterHandler(BaseHandler):
 
   def get(self):
-    user = self.session.get('User')
-    if (user):
+    user_obj = self.session.get('User')
+    if (user_obj):
       self.redirect('/home')
     else:
       self.redirect('/')
@@ -166,19 +166,21 @@ class LoginHandler(BaseHandler):
 class HomeHandler(BaseHandler):
     
   def get(self):
-    user = self.session.get('User')
+    user_obj = self.session.get('user')
+    if( not user_obj):
+      self.redirect('/login')
     template = JINJA_ENVIRONMENT.get_template('index.html')
     self.response.write(template.render({'user': True}))
 
   def post(self):
-    user = self.session.get('User')
+    user_obj = self.session.get('user')
     template_values = {'user': True}
     showIndex(self, template_values)
 
 class ForgotHandler(BaseHandler):
 
   def get(self):
-    user = self.session.get('User')
+    user_obj = self.session.get('user')
     if (user):
       self.redirect('/home')
     template = JINJA_ENVIRONMENT.get_template('index.html')
@@ -267,11 +269,11 @@ class ChangepasswordHandler(BaseHandler):
 
   def post(self):
     logging.info(self.request)
-    user = self.session.get('User')
+    user_obj = self.session.get('user')
     errors = []
     success = []
     user_password = self.request.get('password', '')
-    if (user.password and user_password):
+    if (user_obj.password and user_password):
       user_npassword = self.request.get('npassword', '')
       user_cpassword = self.request.get('confirmpassword', '')
       if (user_npassword and user_cpassword):
@@ -302,7 +304,7 @@ class AddsiteHandler(BaseHandler):
 
   def post(self):
     logging.info(self.request)
-    user = self.session.get('user')
+    user_obj = self.session.get('user')
     errors = []
     success = []
     user_sitename = self.request.get('sitename', '')
