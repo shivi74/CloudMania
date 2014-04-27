@@ -85,7 +85,7 @@ class RegisterHandler(BaseHandler):
                          Dear User:
                          Hello, Thank you for registering in cloudmania.
                          Please tap the following link to complete the email registration process.
-                         http://cloud-mania.appspot.com/verify?uuid=%s\n\n""" % (user_uuid))
+                         http://cloud-mania.appspot.com/verify?uuid=%s#banner\n\n""" % (user_uuid))
       self.redirect('/login#banner')
       return
     else:
@@ -112,12 +112,12 @@ class VerifyHandler(BaseHandler):
     if (counter == 0):
       errors.append("No entry of uuid in database.")
     else:
-      verify_records = verify_all.run(limit=1)
+      verify_record = verify_all.get()
       success = []
-      for verify_record in verify_records:
-        verify_record.user.is_verify = True
-        verify_record.user.put()
-        success.append("Verification Successfull!")
+      verify_record.user.is_verify = True
+      verify_record.user.put()
+      verify_record.delete()
+      success.append("Verification Successfull!")
     template_values = {"success": '<br/>'.join(success), "errors": "<br/>".join(errors)}
     showIndex(self, template_values)
 
@@ -168,16 +168,13 @@ class ForgotHandler(BaseHandler):
     if (total == 0):
       errors.append('email-id not registered!')
       template_values = {'errors': '<br/>'.join(errors), 'forgot': True}
-    if (not is_valid):
+    elif (not is_valid):
       errors.append('Wrong email-id!')
       template_values = {'errors': '<br/>'.join(errors), 'forgot': True}
-    if (is_valid and not total):
+    else:
       user_uuid = str(uuid.uuid1())
       logging.info(user_uuid)
-      user_obj = None
-      for user_rec in user_all.run(limit=1):
-        user_obj = user_rec
-      database.Forgot(user=user_obj, uuid=user_uuid).put()
+      database.Forgot(user=user_all.get(), uuid=user_uuid).put()
       mail.send_mail(sender='shivani.9487@gmail.com',
               to = user_email,
               subject="CloudMania Reset Password",
@@ -185,8 +182,7 @@ class ForgotHandler(BaseHandler):
     Dear User,
 
     Hello, Please tap the following link to change password.
-    http://cloud-mania.appspot.com/reset?uuid=%s\n\n""" % (user_uuid))
-      logging.info(user_uuid)
+    http://cloud-mania.appspot.com/reset?uuid=%s#banner\n\n""" % (user_uuid))
       template_values = {'message': True}
     template_values = {'errors': '<br/>'.join(errors), 'forgot': True, 'message': True}
     showIndex(self, template_values)
@@ -212,14 +208,13 @@ class ResetHandler(BaseHandler):
     if (counter == 0):
       errors.append("No entry of uuid in database.")
     else:
-      reset_records = reset_all.run(limit=1)
       if (user_password and user_cpassword):
-        for reset_record in reset_records:
-          reset_record.user.password = (base64.b64encode(user_password))
-          reset_records.user.put()
-        success.append("Password Changed !")
+        reset_record = reset_all.get()
+        reset_record.user.password = base64.b64encode(user_password)
+        reset_record.user.put()
+        reset_record.delete()
+        success.append("Password Changed!")
         template_values = {'success': '<br/>'.join(success), 'forgot': True, 'login': True}
-        database.Forgot(user = reset_all, uuid = user_uuid, is_viewed = True).put();
       else:
         errors.append("Password don't match!")
         template_values = {'errors': '<br/>'.join(errors), 'forgot': True, 'reset': True}
