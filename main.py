@@ -196,7 +196,7 @@ class ForgotHandler(BaseHandler):
   def get(self):
     user_obj = self.session.get('user')
     if (user):
-      self.redirect('/home')
+      self.redirect('/home#banner')
     template = JINJA_ENVIRONMENT.get_template('index.html')
     self.response.write(template.render({'forgot': True}))
 
@@ -250,7 +250,7 @@ class ResetHandler(BaseHandler):
     if (counter == 0):
       errors.append("No entry of uuid in database.")
     else:
-      if (user_password and user_cpassword):
+      if ((user_password == user_cpassword) and (user_password == user_cpassword)):
         reset_record = reset_all.get()
         reset_record.user.password = base64.b64encode(user_password)
         reset_record.user.put()
@@ -270,7 +270,7 @@ class ResetHandler(BaseHandler):
       else:
         errors.append("Password don't match!")
         template_values = {'errors': '<br/>'.join(errors), 'forgot': True, 'reset': True}
-      self.redirect('/login')
+      self.redirect('/login#banner')
     template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors)}
     showIndex(self, template_values)
 
@@ -291,10 +291,10 @@ class ChangepasswordHandler(BaseHandler):
     success = []
     user_password = self.request.get('password', '')
     change_obj = getUser(user_obj)
-    if (change_obj.password and user_password):
-      user_npassword = self.request.get('npassword', '')
+    if (change_obj.password == user_password):
+      user_npassword = self.request.get('newpassword', '')
       user_cpassword = self.request.get('confirmpassword', '')
-      if (user_npassword and user_cpassword):
+      if (user_npassword == user_cpassword):
         change_obj.put()
         success.append("Password changed !")
         mail.send_mail(sender='shivani.9487@gmail.com',
@@ -307,11 +307,11 @@ class ChangepasswordHandler(BaseHandler):
     Remember to login with new password from now! :)
 
     -Shivani Sharma""")
+      self.redirect('/home#banner')
     else:
       errors.append("Old Password don't match!")
       self.redirect('/changepassword')
     template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user' : user_obj}
-    template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user': user_obj}
     showIndex(self, template_values)
 
 class AddsiteHandler(BaseHandler):
@@ -348,8 +348,8 @@ class AddsiteHandler(BaseHandler):
       self.redirect('/home#banner')
     else:
       errors.append("ID already exist!! Try another :)")
-      template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user' : user_obj,'addsite' : True}
-      self.redirect('/addsite')
+      template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user' : True,'addsite' : True}
+      self.redirect('/addsite#banner')
     showIndex(self, template_values)
 
 class LogoutHandler(BaseHandler):
