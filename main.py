@@ -182,7 +182,7 @@ class HomeHandler(BaseHandler):
 
   def post(self):
     user_obj = self.session.get('user')
-    template_values = {'user': True}
+    template_values = {'user': user_obj}
     showIndex(self, template_values)
 
 class ForgotHandler(BaseHandler):
@@ -278,14 +278,16 @@ class ChangepasswordHandler(BaseHandler):
   def post(self):
     logging.info(self.request)
     user_obj = self.session.get('user')
+    user_email = user_obj
     errors = []
     success = []
     user_password = self.request.get('password', '')
-    if (user_obj.password and user_password):
-      user_npassword = self.request.get('npassword', '')
+    change_obj = getUser(user_email)    
+    if (change_obj.password and user_password):
+      user_npassword = self.request.get('newpassword', '')
       user_cpassword = self.request.get('confirmpassword', '')
       if (user_npassword and user_cpassword):
-        database.User(password = user_npassword)
+        change_obj.put()
         success.append("Password changed !")
         mail.send_mail(sender='shivani.9487@gmail.com',
               to = user_email,
@@ -301,7 +303,6 @@ class ChangepasswordHandler(BaseHandler):
       errors.append("Old Password don't match!")
       self.redirect('/changepassword')
     template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user' : True}
-    template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user': True}
     showIndex(self, template_values)
 
 class AddsiteHandler(BaseHandler):
@@ -409,7 +410,6 @@ class OAuthDropboxHandler(BaseHandler):
     user_obj.access_token = access_token
     user_obj.put()
     self.redirect('/home#banner')
-
 
 app = webapp2.WSGIApplication([
     ('/', MainPage),
