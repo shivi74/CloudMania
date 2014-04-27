@@ -179,7 +179,7 @@ class HomeHandler(BaseHandler):
 
   def post(self):
     user_obj = self.session.get('user')
-    template_values = {'user': True}
+    template_values = {'user': user_obj}
     showIndex(self, template_values)
 
 class ForgotHandler(BaseHandler):
@@ -275,27 +275,16 @@ class ChangepasswordHandler(BaseHandler):
   def post(self):
     logging.info(self.request)
     user_obj = self.session.get('user')
-    user_email = user_obj.get()
+    user_email = user_obj
     errors = []
     success = []
     user_password = self.request.get('password', '')
-    
-    change_all = database.User.all()
-    change_all.filter("email =", user_email)
-    counter = change_all.count(limit=1)
-    if (counter == 0):
-        errors.append("User not registered!")
-    else:
-      verify_record = verify_all.get()
-      success = []
-      verify_record.user.is_verify = True
-      verify_record.user.put()
-    
-    if (user_obj.password and user_password):
+    change_obj = getUser(user_email)    
+    if (change_obj.password and user_password):
       user_npassword = self.request.get('npassword', '')
       user_cpassword = self.request.get('confirmpassword', '')
       if (user_npassword and user_cpassword):
-        database.User(password = user_npassword)
+        change_obj.user.put()
         success.append("Password changed !")
         mail.send_mail(sender='shivani.9487@gmail.com',
               to = user_email,
