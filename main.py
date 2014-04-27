@@ -281,7 +281,6 @@ class ChangepasswordHandler(BaseHandler):
     errors = []
     success = []
     user_password = self.request.get('password', '')
-    change_obj = getUser(user_obj)
     if (change_obj.password == user_password):
       user_npassword = self.request.get('newpassword', '')
       user_cpassword = self.request.get('confirmpassword', '')

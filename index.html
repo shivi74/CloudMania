@@ -63,13 +63,15 @@
 		{% if not changepassword and not addsite %}
         	<h2>Welcome, {{user.email}}</h2>
 		<br>
+        {% if sites %}
         <div>
             <h2>List of sites:</h2><ol>
             {% for sitename, siteid in sites %}
-            <li>{{sitename}} - <a href="/u/{{siteid}}/index.html">{{siteid}}</a></li>
+            <li>{{sitename}} - <a target="_blank" href="/u/{{siteid}}/index.html">{{siteid}}</a></li>
             {% endfor %}
             </ol>
         </div>
+        {% endif %}
         {% if is_connected %}
 		<a class="button style2" href="/addsite#banner">Add Site</a>
         {% endif %}
