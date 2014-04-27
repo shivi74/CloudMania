@@ -182,7 +182,7 @@ class HomeHandler(BaseHandler):
 
   def post(self):
     user_obj = self.session.get('user')
-    template_values = {'user': user_obj}
+    template_values = {'user': True}
     showIndex(self, template_values)
 
 class ForgotHandler(BaseHandler):
@@ -278,16 +278,14 @@ class ChangepasswordHandler(BaseHandler):
   def post(self):
     logging.info(self.request)
     user_obj = self.session.get('user')
-    user_email = user_obj
     errors = []
     success = []
     user_password = self.request.get('password', '')
-    change_obj = getUser(user_email)    
-    if (change_obj.password and user_password):
-      user_npassword = self.request.get('newpassword', '')
+    if (user_obj.password and user_password):
+      user_npassword = self.request.get('npassword', '')
       user_cpassword = self.request.get('confirmpassword', '')
       if (user_npassword and user_cpassword):
-        change_obj.put()
+        database.User(password = user_npassword)
         success.append("Password changed !")
         mail.send_mail(sender='shivani.9487@gmail.com',
               to = user_email,
@@ -303,6 +301,7 @@ class ChangepasswordHandler(BaseHandler):
       errors.append("Old Password don't match!")
       self.redirect('/changepassword')
     template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user' : True}
+    template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user': True}
     showIndex(self, template_values)
 
 class AddsiteHandler(BaseHandler):
@@ -331,8 +330,7 @@ class AddsiteHandler(BaseHandler):
       success.append("URL registered!")
       database.Mapping(Sitename = user_sitename, SiteID = user_siteID, user=user_obj).put()
       client = DropboxClient(user_obj.access_token)
-      logging.info(dir(client))
-      response = client.put_file('%s/index.html' % user_siteID, None)
+      response = client.put_file('%s/index.html' % user_siteID, '<h1>Hello World</h1>')
       logging.info(response)
       template_values = {'success': '<br/>'.join(success), 'user' : True}
       self.redirect('/home')
@@ -410,6 +408,7 @@ class OAuthDropboxHandler(BaseHandler):
     user_obj.access_token = access_token
     user_obj.put()
     self.redirect('/home#banner')
+
 
 app = webapp2.WSGIApplication([
     ('/', MainPage),
