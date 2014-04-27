@@ -244,7 +244,7 @@ class ResetHandler(BaseHandler):
     if (counter == 0):
       errors.append("No entry of uuid in database.")
     else:
-      if ((user_password == user_cpassword) and (user_password == user_cpassword)):
+      if ((user_password == user_cpassword) and (user_password and user_cpassword)):
         reset_record = reset_all.get()
         reset_record.user.password = base64.b64encode(user_password)
         reset_record.user.put()
@@ -281,12 +281,13 @@ class ChangepasswordHandler(BaseHandler):
     errors = []
     success = []
     user_password = self.request.get('password', '')
+    change_obj = getUser(user_obj)
     if (change_obj.password == user_password):
       user_npassword = self.request.get('newpassword', '')
       user_cpassword = self.request.get('confirmpassword', '')
       if ((user_npassword == user_cpassword) and (user_npassword and user_cpassword)):
-        verify_record.password = base64.b64encode(user_npassword)
-        verify_record.put()
+        change_obj.password = base64.b64encode(user_npassword)
+        change_obj.put()
         success.append("Password changed !")
         mail.send_mail(sender='shivani.9487@gmail.com',
               to = user_email,
