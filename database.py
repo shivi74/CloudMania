@@ -16,7 +16,6 @@ class Verify(db.Model):
 class Forgot(db.Model):
   user = db.ReferenceProperty(User)
   uuid = db.StringProperty(required = True)
-  is_viewed = db.BooleanProperty(default=False)
 
 class Addsite(db.Model):
   Sitename = db.StringProperty
