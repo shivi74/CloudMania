@@ -272,6 +272,7 @@ class ChangepasswordHandler(BaseHandler):
     user_password = self.request.get('password', '')
     user_npassword = self.request.get('npassword', '')
     user_cpassword = self.request.get('confirmpassword', '')
+    
     change_all = database.User.all().filter("password =", base64.b64encode(user_password))
     counter = change_all.count(limit=1)
     if (user):
@@ -295,7 +296,7 @@ class ChangepasswordHandler(BaseHandler):
     Remember to login with new password from now! :)
     
     -Shivani Sharma""")
-    template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors)}
+    template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user' : True}
     showIndex(self, template_values)
 
 class AddsiteHandler(BaseHandler):
