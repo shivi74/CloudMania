@@ -14,7 +14,7 @@ class Verify(db.Model):
   uuid = db.StringProperty(required = True)
 
 class Forgot(db.Model):
-  email = db.StringProperty(required = True)
+  user = db.ReferenceProperty(User)
   uuid = db.StringProperty(required = True)
   is_viewed = db.BooleanProperty()
   

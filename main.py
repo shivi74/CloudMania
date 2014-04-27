@@ -71,7 +71,7 @@ class RegisterHandler(BaseHandler):
     total = q.count()
     logging.info(total)
     if ((user_email and utils.valid_email(user_email)) and (user_password == user_cpassword) and total == 0):
-      user_uuid = str(uuid.uuid5(uuid.NAMESPACE_URL, 'user_email'))
+      user_uuid = str(uuid.uuid1())
       logging.info(user_uuid)
       user_obj = database.User(key_name = user_email, email = user_email, password = base64.b64encode(user_password), is_verify = False)
       user_obj.put()
@@ -113,8 +113,8 @@ class VerifyHandler(BaseHandler):
       errors.append("No entry of uuid in database.")
     else:
       verify_objs = verify_obj.run(limit=1)
-      verify_objs.user.is_verify = True
-      verify_objs.user.put()
+      verify_objs.is_verify = True
+      verify_objs.put()
       success = []
       success.append("Verification Successfull!")
     if(not database.Verify.is_verify):
@@ -166,11 +166,15 @@ class ForgotHandler(BaseHandler):
     logging.info(self.request)
     user_email = self.request.get('email')
     is_valid = utils.valid_email(user_email)
+    is_exist = database.User.all().filter("email =", user_email)
+    if (not is_exist):
+      errors.append('email-id not registered!')
+      template_values = {'errors': '<br/>'.join(errors), 'forgot': True}
     if (not is_valid):
       errors.append('Wrong email-id!')
       template_values = {'errors': '<br/>'.join(errors), 'forgot': True}
-    if (is_valid):
-      user_uuid = str(uuid.uuid5(uuid.NAMESPACE_DNS, 'user_email'))
+    if (is_valid and is_exist):
+      user_uuid = str(uuid.uuid1())
       logging.info(user_uuid)
       database.Forgot(email = user_email, uuid = user_uuid, is_viewed = False).put();
       mail.send_mail(sender='shivani.9487@gmail.com',
@@ -191,23 +195,25 @@ class ResetHandler(BaseHandler):
   
   def get(self):
     logging.info(self.request)
-    user_email = self.request.get('email')
-    user_uuidg = self.request.get('uuid')
-    user_password = self.request.get('password','')
-    user_cpassword = self.request.get('confirmpassword','')
     template = JINJA_ENVIRONMENT.get_template('index.html')
-    self.response.write(template.render({'forgot': True, 'reset': True, "email":"", "password":"", "confirmpassword":"", "uuid":""}))
+    user_uuidg = self.request.get('uuid')
+    self.response.write(template.render({'forgot': True, 'reset': True, "uuid": user_uuidg}))
     
   def post(self):
     success = []
     errors = []
+    user_email = self.request.get('email')
     user_uuidg = self.request.get('uuid')
+    user_password = self.request.get('password','')
+    user_cpassword = self.request.get('confirmpassword','')
     logging.info(user_uuidg)
+    reset_obj = database.User.all().filter("email =", user_email)
     if (database.Forgot.uuid and str(user_uuidg)):
       if ((user_password and user_cpassword) and database.Forgot.is_viewed == False):
         success.append("Password Changed !")
         template_values = {'success': '<br/>'.join(success), 'forgot': True, 'reset': True}
-        database.User(email = user_email, password = base64.b64encode(user_password)).put();
+        reset_objs = reset_obj.run(limit=1)
+        reset_objs.password = base64.b64encode(user_password).put()
         database.Forgot(email = user_email, uuid = user_uuid, is_viewed = True).put();
       else:
         errors.append("Password don't match!")
