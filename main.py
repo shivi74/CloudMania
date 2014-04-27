@@ -203,17 +203,16 @@ class ResetHandler(BaseHandler):
     user_password = self.request.get('password','')
     user_cpassword = self.request.get('confirmpassword','')
     logging.info(user_uuidg)
-    reset_all = database.Forgot.all().filter("uuid =", user_uuid)
+    reset_all = database.Forgot.all().filter("uuid =", user_uuidg)
     counter = reset_all.count(limit=1)
     if (counter == 0):
       errors.append("No entry of uuid in database.")
     else:
       reset_records = reset_all.run(limit=1)
-      reset_record = reset_records[0]
       if (user_password and user_cpassword):
         for reset_record in reset_records:
-          reset_record.password = user_password
-          reset_records.put()
+          reset_record.user.password = (base64.b64encode(user_password))
+          reset_records.user.put()
         success.append("Password Changed !")
         template_values = {'success': '<br/>'.join(success), 'forgot': True, 'login': True}
         database.Forgot(user = reset_all, uuid = user_uuid, is_viewed = True).put();
