@@ -10,7 +10,7 @@ import datetime
 import smtplib
 import database
 import utils
-import dropbox
+from dropbox.client import DropboxClient, DropboxOAuth2Flow
 
 
 from google.appengine.api import users
@@ -22,12 +22,21 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
+# Fill these in!
+DROPBOX_APP_KEY = 'nyoq9i1tlltl0si'
+DROPBOX_APP_SECRET = '3x51jbmxlegpcnv'
+
 CONFIG = {}
 CONFIG['webapp2_extras.sessions'] = dict(secret_key='cloudmaniadotcom')
 
 def showIndex(handler, values):
   template = JINJA_ENVIRONMENT.get_template('index.html')
   handler.response.out.write(template.render(values))
+
+def getUser(email):
+  users = database.User.all()
+  users.filter('email =', email)
+  return users.get() if users.count(limit=1) else None
 
 class BaseHandler(webapp2.RequestHandler):
   def dispatch(self):
@@ -144,27 +153,23 @@ class LoginHandler(BaseHandler):
     errors = []
     if (is_valid):
       user_password = self.request.get('password', '')
-      q = database.Query(database.User)
+      q = database.User.all()
       q.filter("email =", user_email)
-      logging.info(user_email)
-      record = q.fetch(1)
-      logging.info(record[0].password)
-      logging.info(base64.b64encode(user_password))
-      logging.info(user_password)
-    if (base64.b64encode(user_password) == record[0].password):
-      template_values = {'login': True, 'user': record[0].email}
-      if(base64.b64encode(user_password) == record[0].password):
+      user_obj = q.get()
+    if (base64.b64encode(user_password) == user_obj.password):
+      template_values = {'login': True, 'user': user_obj.email}
+      if(base64.b64encode(user_password) == user_obj.password):
         self.session['user'] = user_email
         logging.info("%s just logged in" % user_email)
-        template_values = {'login': True, 'user': record[0].email}
-        self.redirect('/home')
+        template_values = {'login': True, 'user': user_obj.email}
+        self.redirect('/home#banner')
     if (not is_valid):
       errors.append('Wrong Username / Password!')
       template_values = {'errors': '<br/>'.join(errors), 'login': True}
     showIndex(self, template_values)
 
 class HomeHandler(BaseHandler):
-    
+
   def get(self):
     user_obj = self.session.get('user')
     if( not user_obj):
@@ -193,7 +198,7 @@ class ForgotHandler(BaseHandler):
     is_valid = utils.valid_email(user_email)
     user_all = database.User.all().filter("email =", user_email)
     total = user_all.count(limit=1)
-    if (total == 0):     	
+    if (total == 0):
       errors.append('email-id not registered!')
       template_values = {'errors': '<br/>'.join(errors), 'forgot': True}
     elif (not is_valid):
@@ -220,7 +225,7 @@ class ResetHandler(BaseHandler):
 
   def get(self):
     logging.info(self.request)
-    user_uuidg = self.request.get('uuid') 
+    user_uuidg = self.request.get('uuid')
     template = JINJA_ENVIRONMENT.get_template('index.html')
     self.response.write(template.render({'forgot': True, 'reset': True, "uuid": user_uuidg}))
 
@@ -250,7 +255,7 @@ class ResetHandler(BaseHandler):
 
     Hello, This is to inform you that your CloudMania account's password had been changed successfully.
     Remember to login with new password from now! :)
-    
+
     -Shivani Sharma""")
         template_values = {'success': '<br/>'.join(success), 'forgot': True, 'login': True}
       else:
@@ -300,7 +305,7 @@ class ChangepasswordHandler(BaseHandler):
 
     Hello, This is to inform you that your CloudMania account's password had been updated successfully.
     Remember to login with new password from now! :)
-    
+
     -Shivani Sharma""")
     else:
       errors.append("Old Password don't match!")
@@ -322,7 +327,7 @@ class AddsiteHandler(BaseHandler):
     success = []
     user_sitename = self.request.get('sitename', '')
     user_siteID = self.request.get('siteID', '')
-    if( user_siteID == "" ): 
+    if( user_siteID == "" ):
       errors.append("Don't forget to give siteID!")
       template_values = {'errors': '<br/>'.join(errors),'user': True, 'addsite' : True}
     idobj = database.Mapping.all()
@@ -355,6 +360,51 @@ class LogoutHandler(BaseHandler):
     template_values = {'logout': True}
     showIndex(self, template_values)
 
+def get_dropbox_auth_flow(session):
+  return DropboxOAuth2Flow(DROPBOX_APP_KEY, DROPBOX_APP_SECRET,
+                           'http://localhost:8080/oauth', session,
+                           'dropbox-auth-csrf-token')
+
+
+class ConnectDropboxHandler(BaseHandler):
+  def get(self):
+    authorize_url = get_dropbox_auth_flow(self.session).start()
+    self.redirect(authorize_url)
+
+
+class OAuthDropboxHandler(BaseHandler):
+  def get(self):
+    user_email = self.session.get('user')
+    logging.info(self.request)
+    request_obj = {'state': self.request.get('state'),
+                   'code': self.request.get('code')}
+    try:
+        access_token, user_id, url_state = get_dropbox_auth_flow(self.session).finish(request_obj)
+    except DropboxOAuth2Flow.BadRequestException, e:
+        logging.info(e)
+        logging.info(400)
+    except DropboxOAuth2Flow.BadStateException, e:
+        logging.info(e)
+        logging.info(400)
+    except DropboxOAuth2Flow.CsrfException, e:
+        logging.info(e)
+        logging.info(403)
+    except DropboxOAuth2Flow.NotApprovedException, e:
+        logging.info(e)
+        logging.info('Not approved?  Why not, bro?')
+        return self.redirect('/home#banner')
+    except DropboxOAuth2Flow.ProviderException, e:
+        logging.info("Auth error" + e)
+        logging.info(403)
+    logging.info(access_token)
+    logging.info(user_id)
+    logging.info(url_state)
+    user_obj = getUser(user_email)
+    user_obj.access_token = access_token
+    user_obj.put()
+    self.response.out.write(self.request)
+
+
 app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/register', RegisterHandler),
@@ -365,5 +415,7 @@ app = webapp2.WSGIApplication([
     ('/reset', ResetHandler),
     ('/changepassword', ChangepasswordHandler),
     ('/addsite', AddsiteHandler),
-    ('/logout', LogoutHandler)
+    ('/logout', LogoutHandler),
+    ('/connect', ConnectDropboxHandler),
+    ('/oauth', OAuthDropboxHandler)
 ], debug=True, config=CONFIG)
