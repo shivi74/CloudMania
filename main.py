@@ -156,6 +156,7 @@ class LoginHandler(BaseHandler):
         self.session['user'] = user_email
         logging.info("%s just logged in" % user_email)
         template_values = {'login': True, 'user': record[0].email}
+        self.redirect('/home')
     if (not is_valid):
       errors.append('Wrong Username / Password!')
       template_values = {'errors': '<br/>'.join(errors), 'login': True}
@@ -179,8 +180,6 @@ class ForgotHandler(BaseHandler):
     user = self.session.get('User')
     if (user):
       self.redirect('/home#banner')
-    else:
-      self.redirect('/login#banner')
     template = JINJA_ENVIRONMENT.get_template('index.html')
     self.response.write(template.render({'forgot': True}))
 
@@ -241,7 +240,7 @@ class ResetHandler(BaseHandler):
         reset_record.delete()
         success.append("Password Changed!")
         mail.send_mail(sender='shivani.9487@gmail.com',
-              to = user_email,
+              to = reset_record.user.email,
               subject="CloudMania Password Changed",
               body="""
     Dear User,
@@ -271,15 +270,15 @@ class ChangepasswordHandler(BaseHandler):
     errors = []
     success = []
     user_password = self.request.get('password', '')
-
+    user_npassword = self.request.get('npassword', '')
+    user_cpassword = self.request.get('confirmpassword', '')
     change_all = database.User.all().filter("password =", base64.b64encode(user_password))
     counter = change_all.count(limit=1)
     if (user):
       if (counter == 0):
         errors.append("Old Password don't match!")
       else:
-        user_npassword = self.request.get('npassword', '')
-        user_cpassword = self.request.get('confirmpassword', '')
+
         if (user_npassword and user_cpassword):
           change_record = change_all.get()
           change_record.user.password = user_npassword
@@ -296,7 +295,7 @@ class ChangepasswordHandler(BaseHandler):
     Remember to login with new password from now! :)
 
     -Shivani Sharma""")
-      template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors)}
+    template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors)}
     showIndex(self, template_values)
 
 class AddsiteHandler(BaseHandler):
@@ -322,10 +321,11 @@ class AddsiteHandler(BaseHandler):
       success.append("URL registered!")
       database.Mapping(sitename = user_sitename, siteID = user_siteID).put()
       template_values = {'success': '<br/>'.join(success), 'user' : True}
+      self.redirect('/home')
     else:
       errors.append("ID already exist!! Try another :)")
       template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user' : True,'addsite' : True}
-      self.redirect('/home#banner')
+      self.redirect('/addsite#banner')
     showIndex(self, template_values)
 
 class LogoutHandler(BaseHandler):
