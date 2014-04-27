@@ -211,8 +211,9 @@ class ResetHandler(BaseHandler):
       reset_records = reset_all.run(limit=1)
       reset_record = reset_records[0]
       if (user_password and user_cpassword):
-        reset_record.password = user_password
-        reset_records.put()
+        for reset_record in reset_records:
+          reset_record.password = user_password
+          reset_records.put()
         success.append("Password Changed !")
         template_values = {'success': '<br/>'.join(success), 'forgot': True, 'login': True}
         database.Forgot(user = reset_all, uuid = user_uuid, is_viewed = True).put();
