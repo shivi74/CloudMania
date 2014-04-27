@@ -176,19 +176,13 @@ class HomeHandler(BaseHandler):
     user_obj = getUser(user_email)
     if( not user_obj):
       self.redirect('/login')
-    sites = database.Mapping.all().filter('user =', user_obj)
-    site_objs = []
-    for site in sites.run():
-      site_objs.append([site.Sitename, site.SiteID])
     template = JINJA_ENVIRONMENT.get_template('index.html')
-    self.response.write(template.render({'user': user_obj,
-                                         'is_connected': user_obj.access_token,
-                                         'sites': site_objs}))
+    self.response.write(template.render({'user': True,
+                                         'is_connected': user_obj.access_token}))
 
   def post(self):
-    user_email = self.session.get('user')
-    user_obj = getUser(user_email)
-    template_values = {'user': user_obj}
+    user_obj = self.session.get('user')
+    template_values = {'user': True}
     showIndex(self, template_values)
 
 class ForgotHandler(BaseHandler):
@@ -278,15 +272,12 @@ class ResetHandler(BaseHandler):
 class ChangepasswordHandler(BaseHandler):
 
   def get(self):
-    user_email = self.session.get('user')
-    user_obj = getUser(user_email)
     template = JINJA_ENVIRONMENT.get_template('index.html')
-    self.response.write(template.render({'user': user_obj, 'changepassword': True}))
+    self.response.write(template.render({'user': True, 'changepassword': True}))
 
   def post(self):
     logging.info(self.request)
-    user_email = self.session.get('user')
-    user_obj = getUser(user_email)
+    user_obj = self.session.get('user')
     errors = []
     success = []
     user_password = self.request.get('password', '')
@@ -294,8 +285,9 @@ class ChangepasswordHandler(BaseHandler):
     if (change_obj.password == user_password):
       user_npassword = self.request.get('newpassword', '')
       user_cpassword = self.request.get('confirmpassword', '')
-      if (user_npassword == user_cpassword):
-        change_obj.put()
+      if ((user_npassword == user_cpassword) and (user_npassword and user_cpassword)):
+        verify_record.password = base64.b64encode(user_npassword)
+        verify_record.put()
         success.append("Password changed !")
         mail.send_mail(sender='shivani.9487@gmail.com',
               to = user_email,
@@ -310,17 +302,15 @@ class ChangepasswordHandler(BaseHandler):
       self.redirect('/home#banner')
     else:
       errors.append("Old Password don't match!")
-      self.redirect('/changepassword')
-    template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user' : user_obj}
+      #self.redirect('/changepassword')
+    template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user' : True}
     showIndex(self, template_values)
 
 class AddsiteHandler(BaseHandler):
 
   def get(self):
-    user_email = self.session.get('user')
-    user_obj = getUser(user_email)
     template = JINJA_ENVIRONMENT.get_template('index.html')
-    self.response.write(template.render({'user': user_obj, 'addsite': True}))
+    self.response.write(template.render({'user': True, 'addsite': True}))
 
   def post(self):
     logging.info(self.request)
@@ -332,7 +322,7 @@ class AddsiteHandler(BaseHandler):
     user_siteID = self.request.get('siteID', '')
     if( user_siteID == "" ):
       errors.append("Don't forget to give siteID!")
-      template_values = {'errors': '<br/>'.join(errors),'user': user_obj, 'addsite' : True}
+      template_values = {'errors': '<br/>'.join(errors),'user': True, 'addsite' : True}
       showIndex(self, template_values)
       return
     idobj = database.Mapping.all()
@@ -423,23 +413,6 @@ class OAuthDropboxHandler(BaseHandler):
     self.redirect('/home#banner')
 
 
-class ViewUserFileHandler(BaseHandler):
-  def get(self, **kwargs):
-    path = kwargs.get('path')
-    siteID = path[:path.index('/')]
-    mapping_obj = database.Mapping.all().filter('SiteID =', siteID)
-    mapping_obj = mapping_obj.get()
-    logging.info(mapping_obj)
-    logging.info(path)
-    client = DropboxClient(mapping_obj.user.access_token)
-    logging.info(client.get_file(path))
-    content = 'no'
-    f = client.get_file(path)
-    content = f.read()
-    f.close()
-    self.response.out.write(content)
-
-
 app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/register', RegisterHandler),
@@ -453,6 +426,5 @@ app = webapp2.WSGIApplication([
     ('/logout', LogoutHandler),
     ('/connect', ConnectDropboxHandler),
     ('/oauth', OAuthDropboxHandler),
-    ('/disconnect', DisconnectDropboxHandler),
-    webapp2.Route(r'/u/<path:(.*)>', ViewUserFileHandler)
+    ('/disconnect', DisconnectDropboxHandler)
 ], debug=True, config=CONFIG)
