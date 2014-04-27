@@ -176,13 +176,19 @@ class HomeHandler(BaseHandler):
     user_obj = getUser(user_email)
     if( not user_obj):
       self.redirect('/login')
+    sites = database.Mapping.all().filter('user =', user_obj)
+    site_objs = []
+    for site in sites.run():
+      site_objs.append([site.Sitename, site.SiteID])
     template = JINJA_ENVIRONMENT.get_template('index.html')
-    self.response.write(template.render({'user': True,
-                                         'is_connected': user_obj.access_token}))
+    self.response.write(template.render({'user': user_obj,
+                                         'is_connected': user_obj.access_token,
+                                         'sites': site_objs}))
 
   def post(self):
-    user_obj = self.session.get('user')
-    template_values = {'user': True}
+    user_email = self.session.get('user')
+    user_obj = getUser(user_email)
+    template_values = {'user': user_obj}
     showIndex(self, template_values)
 
 class ForgotHandler(BaseHandler):
@@ -272,8 +278,10 @@ class ResetHandler(BaseHandler):
 class ChangepasswordHandler(BaseHandler):
 
   def get(self):
+    user_email = self.session.get('user')
+    user_obj = getUser(user_email)
     template = JINJA_ENVIRONMENT.get_template('index.html')
-    self.response.write(template.render({'user': True, 'changepassword': True}))
+    self.response.write(template.render({'user': user_obj, 'changepassword': True}))
 
   def post(self):
     logging.info(self.request)
@@ -302,15 +310,17 @@ class ChangepasswordHandler(BaseHandler):
     else:
       errors.append("Old Password don't match!")
       self.redirect('/changepassword')
-    template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user' : True}
-    template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user': True}
+    template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user' : user_obj}
+    template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user': user_obj}
     showIndex(self, template_values)
 
 class AddsiteHandler(BaseHandler):
 
   def get(self):
+    user_email = self.session.get('user')
+    user_obj = getUser(user_email)
     template = JINJA_ENVIRONMENT.get_template('index.html')
-    self.response.write(template.render({'user': True, 'addsite': True}))
+    self.response.write(template.render({'user': user_obj, 'addsite': True}))
 
   def post(self):
     logging.info(self.request)
@@ -322,7 +332,7 @@ class AddsiteHandler(BaseHandler):
     user_siteID = self.request.get('siteID', '')
     if( user_siteID == "" ):
       errors.append("Don't forget to give siteID!")
-      template_values = {'errors': '<br/>'.join(errors),'user': True, 'addsite' : True}
+      template_values = {'errors': '<br/>'.join(errors),'user': user_obj, 'addsite' : True}
       showIndex(self, template_values)
       return
     idobj = database.Mapping.all()
@@ -335,10 +345,10 @@ class AddsiteHandler(BaseHandler):
       response = client.put_file('%s/index.html' % user_siteID, '<h1>Hello World</h1>')
       logging.info(response)
       template_values = {'success': '<br/>'.join(success), 'user' : True}
-      self.redirect('/home')
+      self.redirect('/home#banner')
     else:
       errors.append("ID already exist!! Try another :)")
-      template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user' : True,'addsite' : True}
+      template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user' : user_obj,'addsite' : True}
       self.redirect('/addsite')
     showIndex(self, template_values)
 
