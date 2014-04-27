@@ -146,17 +146,14 @@ class LoginHandler(BaseHandler):
       q = database.Query(database.User)
       q.filter("email =", user_email)
       logging.info(user_email)
-      record = q.fetch(1)
-      logging.info(record[0].password)
-      logging.info(base64.b64encode(user_password))
-      logging.info(user_password)
-    if (base64.b64encode(user_password) == record[0].password):
-      template_values = {'login': True, 'user': record[0].email}
-      if(base64.b64encode(user_password) == record[0].password):
-        self.session['user'] = user_email
+      user_obj = q.get()
+    if (base64.b64encode(user_password) == user_obj.password):
+      template_values = {'login': True, 'user': user_obj.email}
+      if(base64.b64encode(user_password) == user_obj.password):
+        self.session['user'] = user_obj
         logging.info("%s just logged in" % user_email)
-        template_values = {'login': True, 'user': record[0].email}
-        self.redirect('/home')
+        template_values = {'login': True, 'user': user_obj.email}
+        self.redirect('/home#banner')
     if (not is_valid):
       errors.append('Wrong Username / Password!')
       template_values = {'errors': '<br/>'.join(errors), 'login': True}
@@ -295,7 +292,7 @@ class ChangepasswordHandler(BaseHandler):
     Remember to login with new password from now! :)
 
     -Shivani Sharma""")
-    template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors)}
+    template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user': True}
     showIndex(self, template_values)
 
 class AddsiteHandler(BaseHandler):
@@ -321,7 +318,7 @@ class AddsiteHandler(BaseHandler):
       success.append("URL registered!")
       database.Mapping(sitename = user_sitename, siteID = user_siteID).put()
       template_values = {'success': '<br/>'.join(success), 'user' : True}
-      self.redirect('/home')
+      self.redirect('/home#banner')
     else:
       errors.append("ID already exist!! Try another :)")
       template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user' : True,'addsite' : True}
