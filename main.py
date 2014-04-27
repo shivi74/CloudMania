@@ -423,6 +423,23 @@ class OAuthDropboxHandler(BaseHandler):
     self.redirect('/home#banner')
 
 
+class ViewUserFileHandler(BaseHandler):
+  def get(self, **kwargs):
+    path = kwargs.get('path')
+    siteID = path[:path.index('/')]
+    mapping_obj = database.Mapping.all().filter('SiteID =', siteID)
+    mapping_obj = mapping_obj.get()
+    logging.info(mapping_obj)
+    logging.info(path)
+    client = DropboxClient(mapping_obj.user.access_token)
+    logging.info(client.get_file(path))
+    content = 'no'
+    f = client.get_file(path)
+    content = f.read()
+    f.close()
+    self.response.out.write(content)
+
+
 app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/register', RegisterHandler),
@@ -436,5 +453,6 @@ app = webapp2.WSGIApplication([
     ('/logout', LogoutHandler),
     ('/connect', ConnectDropboxHandler),
     ('/oauth', OAuthDropboxHandler),
-    ('/disconnect', DisconnectDropboxHandler)
+    ('/disconnect', DisconnectDropboxHandler),
+    webapp2.Route(r'/u/<path:(.*)>', ViewUserFileHandler)
 ], debug=True, config=CONFIG)

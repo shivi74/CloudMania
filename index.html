@@ -63,7 +63,7 @@
 		{% if not changepassword and not addsite %}
         	<h2>Welcome, {{user.email}}</h2>
 		<br>
-        {% if sites %}
+        {% if sites and is_connected %}
         <div>
             <h2>List of sites:</h2><ol>
             {% for sitename, siteid in sites %}
