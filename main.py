@@ -357,8 +357,9 @@ class LogoutHandler(BaseHandler):
     showIndex(self, template_values)
 
 def get_dropbox_auth_flow(session):
+  logging.info(os.environ['HTTP_HOST'])
   return DropboxOAuth2Flow(DROPBOX_APP_KEY, DROPBOX_APP_SECRET,
-                           'http://localhost:8080/oauth', session,
+                           'https://%s/oauth' % os.environ['HTTP_HOST'], session,
                            'dropbox-auth-csrf-token')
 
 
