@@ -18,7 +18,7 @@ class Forgot(db.Model):
   user = db.ReferenceProperty(User)
   uuid = db.StringProperty(required = True)
 
-class Addsite(db.Model):
+class Mapping(db.Model):
   Sitename = db.StringProperty
   SiteID = db.StringProperty(required = True)
 
