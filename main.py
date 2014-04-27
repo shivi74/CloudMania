@@ -24,8 +24,8 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     autoescape=True)
 
 # Fill these in!
-DROPBOX_APP_KEY = 'nyoq9i1tlltl0si'
-DROPBOX_APP_SECRET = '3x51jbmxlegpcnv'
+DROPBOX_APP_KEY = '0unq5cr7ppla7l7'
+DROPBOX_APP_SECRET = 'ogwjvdsflccndjl'
 
 CONFIG = {}
 CONFIG['webapp2_extras.sessions'] = dict(secret_key='cloudmaniadotcom')
