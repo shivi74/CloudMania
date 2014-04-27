@@ -10,6 +10,7 @@ import datetime
 import smtplib
 import database
 import utils
+import dropbox
 
 
 from google.appengine.api import users
@@ -270,12 +271,31 @@ class ChangepasswordHandler(BaseHandler):
     errors = []
     success = []
     user_password = self.request.get('password', '')
+<<<<<<< HEAD
     if (user.password and user_password):
       user_npassword = self.request.get('npassword', '')
       user_cpassword = self.request.get('confirmpassword', '')
       if (user_npassword and user_cpassword):
         database.User(password = user_npassword)
         success.append("Password changed !")
+=======
+    user_npassword = self.request.get('npassword', '')
+    user_cpassword = self.request.get('confirmpassword', '')
+
+    change_all = database.User.all().filter("password =", base64.b64encode(user_password))
+    counter = change_all.count(limit=1)
+    if (user):
+      if (counter == 0):
+        errors.append("Old Password don't match!")
+      else:
+
+        if (user_npassword and user_cpassword):
+          change_record = change_all.get()
+          change_record.user.password = user_npassword
+          change_record.user.put()
+          success = []
+          success.append("Password changed !")
+>>>>>>> 4cdc670188b7b0b7da8df0a401a0179dbe8bdc14
         mail.send_mail(sender='shivani.9487@gmail.com',
               to = user_email,
               subject="CloudMania Password Updated",
@@ -286,10 +306,14 @@ class ChangepasswordHandler(BaseHandler):
     Remember to login with new password from now! :)
     
     -Shivani Sharma""")
+<<<<<<< HEAD
     else:
       errors.append("Old Password don't match!")
       self.redirect('/changepassword')
     template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user' : True}
+=======
+    template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user': True}
+>>>>>>> 4cdc670188b7b0b7da8df0a401a0179dbe8bdc14
     showIndex(self, template_values)
 
 class AddsiteHandler(BaseHandler):
