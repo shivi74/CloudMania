@@ -173,7 +173,18 @@ class ForgotHandler(BaseHandler):
     if (is_valid and is_exist):
       user_uuid = str(uuid.uuid1())
       logging.info(user_uuid)
-      database.Forgot(email = user_email, uuid = user_uuid, is_viewed = False).put();
+      reset_all = database.Forgot.all()
+      reset_all.filter("uuid =", user_uuid)
+      counter = reset_all.count(limit=1)
+      if (counter == 0):
+        errors.append("No entry of uuid in database.")
+      else:
+        reset_records = reset_all.run(limit=1)
+        success = []
+        for reset_record in reset_records:
+          reset_record.user.email = user_email
+          reset_record.user.is_verify = True
+          reset_record.user.put()
       mail.send_mail(sender='shivani.9487@gmail.com',
               to = user_email,
               subject="CloudMania Reset Password",
