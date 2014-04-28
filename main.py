@@ -24,8 +24,8 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     autoescape=True)
 
 # Fill these in!
-DROPBOX_APP_KEY = 'nyoq9i1tlltl0si'
-DROPBOX_APP_SECRET = '3x51jbmxlegpcnv'
+DROPBOX_APP_KEY = '0unq5cr7ppla7l7'
+DROPBOX_APP_SECRET = 'ogwjvdsflccndjl'
 
 CONFIG = {}
 CONFIG['webapp2_extras.sessions'] = dict(secret_key='cloudmaniadotcom')
@@ -177,13 +177,19 @@ class HomeHandler(BaseHandler):
     user_obj = getUser(user_email)
     if( not user_obj):
       self.redirect('/login')
+    sites = database.Mapping.all().filter('user =', user_obj)
+    site_objs = []
+    for site in sites.run():
+      site_objs.append([site.Sitename, site.SiteID])
     template = JINJA_ENVIRONMENT.get_template('index.html')
-    self.response.write(template.render({'user': True,
-                                         'is_connected': user_obj.access_token}))
+    self.response.write(template.render({'user': user_obj,
+                                         'is_connected': user_obj.access_token,
+                                         'sites': site_objs}))
 
   def post(self):
-    user_obj = self.session.get('user')
-    template_values = {'user': True}
+    user_email = self.session.get('user')
+    user_obj = getUser(user_email)
+    template_values = {'user': user_obj}
     showIndex(self, template_values)
 
 class ForgotHandler(BaseHandler):
@@ -273,8 +279,10 @@ class ResetHandler(BaseHandler):
 class ChangepasswordHandler(BaseHandler):
 
   def get(self):
+    user_email = self.session.get('user')
+    user_obj = getUser(user_email)
     template = JINJA_ENVIRONMENT.get_template('index.html')
-    self.response.write(template.render({'user': True, 'changepassword': True}))
+    self.response.write(template.render({'user': user_obj, 'changepassword': True}))
 
   def post(self):
     logging.info(self.request)
@@ -310,8 +318,10 @@ class ChangepasswordHandler(BaseHandler):
 class AddsiteHandler(BaseHandler):
 
   def get(self):
+    user_email = self.session.get('user')
+    user_obj = getUser(user_email)
     template = JINJA_ENVIRONMENT.get_template('index.html')
-    self.response.write(template.render({'user': True, 'addsite': True}))
+    self.response.write(template.render({'user': user_obj, 'addsite': True}))
 
   def post(self):
     logging.info(self.request)
@@ -323,7 +333,7 @@ class AddsiteHandler(BaseHandler):
     user_siteID = self.request.get('siteID', '')
     if( user_siteID == "" ):
       errors.append("Don't forget to give siteID!")
-      template_values = {'errors': '<br/>'.join(errors),'user': True, 'addsite' : True}
+      template_values = {'errors': '<br/>'.join(errors),'user': user_obj, 'addsite' : True}
       showIndex(self, template_values)
       return
     idobj = database.Mapping.all()
@@ -414,6 +424,23 @@ class OAuthDropboxHandler(BaseHandler):
     self.redirect('/home#banner')
 
 
+class ViewUserFileHandler(BaseHandler):
+  def get(self, **kwargs):
+    path = kwargs.get('path')
+    siteID = path[:path.index('/')]
+    mapping_obj = database.Mapping.all().filter('SiteID =', siteID)
+    mapping_obj = mapping_obj.get()
+    logging.info(mapping_obj)
+    logging.info(path)
+    client = DropboxClient(mapping_obj.user.access_token)
+    logging.info(client.get_file(path))
+    content = 'no'
+    f = client.get_file(path)
+    content = f.read()
+    f.close()
+    self.response.out.write(content)
+
+
 app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/register', RegisterHandler),
@@ -427,5 +454,6 @@ app = webapp2.WSGIApplication([
     ('/logout', LogoutHandler),
     ('/connect', ConnectDropboxHandler),
     ('/oauth', OAuthDropboxHandler),
-    ('/disconnect', DisconnectDropboxHandler)
+    ('/disconnect', DisconnectDropboxHandler),
+    webapp2.Route(r'/u/<path:(.*)>', ViewUserFileHandler)
 ], debug=True, config=CONFIG)
