@@ -381,9 +381,9 @@ class ContactHandler(BaseHandler):
               body="""
     Dear Admin,
 
-    Name = %s,/n
-    Email = %s,/n
-    Message = %s/n"""% (user_name, user_email, user_message))
+    Name = %s,
+    Email = %s,
+    Message = %s"""% (user_name, user_email, user_message))
       success.append("Email sent!")
       if (user_obj):
         self.redirect('/home#banner')
