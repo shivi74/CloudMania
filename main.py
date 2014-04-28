@@ -157,15 +157,18 @@ class LoginHandler(BaseHandler):
       q = database.User.all()
       q.filter("email =", user_email)
       user_obj = q.get()
-    if (base64.b64encode(user_password) == user_obj.password):
-      template_values = {'login': True, 'user': user_obj.email}
-      if(base64.b64encode(user_password) == user_obj.password):
-        self.session['user'] = user_email
-        logging.info("%s just logged in" % user_email)
+      if (base64.b64encode(user_password) == user_obj.password):
         template_values = {'login': True, 'user': user_obj.email}
-        self.redirect('/home#banner')
-    if (not is_valid):
-      errors.append('Wrong Username / Password!')
+        if(base64.b64encode(user_password) == user_obj.password):
+          self.session['user'] = user_email
+          logging.info("%s just logged in" % user_email)
+          template_values = {'login': True, 'user': user_obj.email}
+          self.redirect('/home#banner')
+      else:
+        errors.append('Wrong Username / Password!')
+        template_values = {'errors': '<br/>'.join(errors), 'login': True}
+    else:
+      errors.append('Invalid Email Address!!')
       template_values = {'errors': '<br/>'.join(errors), 'login': True}
     showIndex(self, template_values)
 
@@ -195,7 +198,7 @@ class ForgotHandler(BaseHandler):
 
   def get(self):
     user_obj = self.session.get('user')
-    if (user):
+    if (user_obj):
       self.redirect('/home#banner')
     template = JINJA_ENVIRONMENT.get_template('index.html')
     self.response.write(template.render({'forgot': True}))
