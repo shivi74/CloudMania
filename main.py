@@ -319,8 +319,8 @@ class AddsiteHandler(BaseHandler):
     user_obj = getUser(user_email)
     errors = []
     success = []
-    user_sitename = self.request.get('sitename', '')
-    user_siteID = self.request.get('siteID', '')
+    user_sitename = self.request.get('Sitename', '')
+    user_siteID = self.request.get('SiteID', '')
     if( user_siteID == "" ):
       errors.append("Don't forget to give siteID!")
       template_values = {'errors': '<br/>'.join(errors),'user': user_obj, 'addsite' : True}
