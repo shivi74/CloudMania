@@ -370,15 +370,11 @@ class ContactHandler(BaseHandler):
     user_name = self.request.get('name', '')
     user_email = self.request.get('email', '')
     user_message = self.request.get('message', '')
-    logging.info(user_message)
-    logging.info(user_name)
-    logging.info(user_email)
     if(not (user_email and utils.valid_email(user_email) and user_name and user_message)):
       errors.append("Email Address is not valid!")
       self.redirect('/contact#contactus')
     else:
       admin = 'shivani.9487@gmail.com'
-      logging.info(admin)
       mail.send_mail(sender = admin,
               to = admin,
               subject="CloudMania Query",
