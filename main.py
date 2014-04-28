@@ -138,6 +138,7 @@ class VerifyHandler(BaseHandler):
       verify_record.user.put()
       verify_record.delete()
       success.append("Verification Successfull!")
+      self.redirect('/login#banner')
     template_values = {"success": '<br/>'.join(success), "errors": "<br/>".join(errors)}
     showIndex(self, template_values)
 
