@@ -363,19 +363,25 @@ class ContactHandler(BaseHandler):
     showIndex(self, {})
 
   def post(self):
+    user_email = self.session.get('user')
+    user_obj = getUser(user_email)
     errors = []
     success = []
     user_name = self.request.get('name', '')
     user_email = self.request.get('email', '')
     user_message = self.request.get('message', '')
-    if(user_email or utils.valid_email(user_email)):
+    logging.info(user_message)
+    logging.info(user_name)
+    logging.info(user_email)
+    if(not (user_email and utils.valid_email(user_email) and user_name and user_message)):
       errors.append("Email Address is not valid!")
       self.redirect('/contact#contactus')
     else:
       admin = 'shivani.9487@gmail.com'
+      logging.info(admin)
       mail.send_mail(sender = admin,
-              to = 'love.sharma.87@gmail.com',
-              subject="CloudMania Query Report",
+              to = admin,
+              subject="CloudMania Query",
               body="""
     Dear Admin,
 
