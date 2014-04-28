@@ -1,9 +1,9 @@
 
-<!DOCTYPE HTML>
+<!doctype html>
 <!--
-  Overflow 1.1 by HTML5 UP
+  overflow 1.1 by html5 up
   html5up.net | @n33co
-  Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+  free for personal and commercial use under the cca 3.0 license (html5up.net/license)
 -->
 <html>
 <head>
@@ -11,33 +11,33 @@
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <meta name="description" content="" />
 <meta name="keywords" content="" />
-<link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,300italic" rel="stylesheet" type="text/css" />
-<!--[if lte IE 8]><script src="css/ie/html5shiv.js"></script><![endif]-->
+<link href="http://fonts.googleapis.com/css?family=source+sans+pro:300,400,600,300italic" rel="stylesheet" type="text/css" />
+<!--[if lte ie 8]><script src="css/ie/html5shiv.js"></script><![endif]-->
 <script src="js/jquery.min.js" type="text/javascript"></script>
 <script src="js/jquery.poptrox.min.js" type="text/javascript"></script>
 <script src="js/skel.min.js" type="text/javascript"></script>
 <script src="js/init.js" type="text/javascript"></script>
-<link href="http://evolzstats.appspot.com/Xf4f2f8e3-ce86-11e3-866d-0000535dcdde.ico" rel="shortcut icon">  
+<link href="http://evolzstats.appspot.com/xf4f2f8e3-ce86-11e3-866d-0000535dcdde.ico" rel="shortcut icon">  
 <noscript>
   <link rel="stylesheet" href="css/skel-noscript.css" type="text/css" />
   <link rel="stylesheet" href="css/style.css" type="text/css" />
 </noscript>
-<!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" type="text/css" /><![endif]-->
+<!--[if lte ie 8]><link rel="stylesheet" href="css/ie/v8.css" type="text/css" /><![endif]-->
 </head>
 <body>
 
-<!-- Header -->
+<!-- header -->
 <section id="header">
   <header>
-    <h1>Cloud Mania</h1>
-    <p>Eaisest way to create website ever.</p>
+    <h1>cloud mania</h1>
+    <p>eaisest way to create website ever.</p>
   </header>
   <footer>
-    <a href="#banner" class="button style2 scrolly scrolly-centered">Try it now</a>
+    <a href="#banner" class="button style2 scrolly scrolly-centered">try it now</a>
   </footer>
 </section>
 
-<!-- Banner -->
+<!-- banner -->
 <section id="banner">
   {% if success %}
   {{ success }}
@@ -48,25 +48,25 @@
   {% if not forgot %}
   {% if not user %}
   <header>
-    <h2 id="register-header">Don't have an account? Sign Up Below</h2>
+    <h2 id="register-header">don't have an account? sign up below</h2>
   </header>
   {% endif %}
   {% if not user %}
   <form action="/register#banner" method="post">
-    <div><input type="text" class="text" name="email" placeholder="Email"></div>
-    <div><input type="password" class="text" name="password" placeholder="Password"></div>
-    <div><input type="password" class="text" name="confirmpassword" placeholder="Confirm Password"></div>
-    <input type="submit" class="button style2" value="Register" name="register" />
-    <input type="button" class="button style2" value="Already Registered?" name="login" />
-    <div><a href="/forgot">Forgot password?</a></div>
+    <div><input type="text" class="text" name="email" placeholder="email"></div>
+    <div><input type="password" class="text" name="password" placeholder="password"></div>
+    <div><input type="password" class="text" name="confirmpassword" placeholder="confirm password"></div>
+    <input type="submit" class="button style2" value="register" name="register" />
+    <input type="button" class="button style2" value="already registered?" name="login" />
+    <div><a href="/forgot">forgot password?</a></div>
   </form>
   {% else %}
   {% if not changepassword and not addsite %}
-  <h2>Welcome, {{user.email}}</h2>
+  <h2>welcome, {{user.email}}</h2>
   <br>
   {% if sites and is_connected %}
   <div>
-    <h2>List of sites:</h2><ol>
+    <h2>list of sites:</h2><ol>
       {% for sitename, siteid in sites %}
       <li>{{sitename}} - <a target="_blank" href="/u/{{siteid}}/index.html">{{siteid}}</a></li>
       {% endfor %}
@@ -74,70 +74,70 @@
   </div>
   {% endif %}
   {% if is_connected %}
-  <a class="button style2" href="/addsite#banner">Add Site</a>
+  <a class="button style2" href="/addsite#banner">add site</a>
   {% endif %}
-  <a class="button style2" href="/changepassword#banner">Change Password</a>
+  <a class="button style2" href="/changepassword#banner">change password</a>
   {% if not is_connected %}
-  <a class="button style2" href="/connect">Connect Dropbox</a>
+  <a class="button style2" href="/connect">connect dropbox</a>
   {% else %}
-  <a class="button style2" href="/disconnect">Disconnect Dropbox</a>
+  <a class="button style2" href="/disconnect">disconnect dropbox</a>
   {% endif %}
   {% endif %}
   {% if changepassword %}
   <header>
-    <h2 id="changepassword-header">Change Password</h2>
+    <h2 id="changepassword-header">change password</h2>
   </header>
   <form action="/changepassword#banner" method="post">
-    <div><input type="password" class="text" name="password" placeholder="Password"></div>
-    <div><input type="password" class="text" name="newpassword" placeholder="New Password"></div>
-    <div><input type="password" class="text" name="confirmpassword" placeholder="Confirm Password"></div>
-    <input type="submit" class="button style2" value="Change Password" name="change_password" />
+    <div><input type="password" class="text" name="password" placeholder="password"></div>
+    <div><input type="password" class="text" name="newpassword" placeholder="new password"></div>
+    <div><input type="password" class="text" name="confirmpassword" placeholder="confirm password"></div>
+    <input type="submit" class="button style2" value="change password" name="change_password" />
   </form>
   {% endif %}
 
   {% if addsite %}
   <header>
-    <h2 id="addsite-header">Add Site</h2>
+    <h2 id="addsite-header">add site</h2>
   </header>
   <form action="/addsite#banner" method="post">
-    <div><input type="text" class="text" name="sitename" placeholder="Site name"></div>
+    <div><input type="text" class="text" name="sitename" placeholder="site name"></div>
     http://cloud-mania.appspot.com/u/
-    <div><input type="text" class="text" name="siteID" placeholder="Site ID"></div>
-    <input type="submit" class="button style2" value="Add Site" name="addsite" />
+    <div><input type="text" class="text" name="siteid" placeholder="site id"></div>
+    <input type="submit" class="button style2" value="add site" name="addsite" />
   </form>
 
   {% endif %}
   <br>
-  <a href="/logout">Logout</a>
+  <a href="/logout">logout</a>
   {% endif %}
   {% if login %}
   <script>
-alreadyRegistered();
+alreadyregistered();
   </script>
   {% endif %}
   {% else %}
   {% if not reset %}
   {% if not message %}
   <header>
-    <h2 id="forgot-header">Forgot Password</h2>
+    <h2 id="forgot-header">forgot password</h2>
   </header>
   <form action="/forgot#banner" method="post">
-    <div><input type="text" class="text" name="email" placeholder="Email"></div>
-    <input type="submit" class="button style2" value="Reset Password" name="reset" />
+    <div><input type="text" class="text" name="email" placeholder="email"></div>
+    <input type="submit" class="button style2" value="reset password" name="reset" />
   </form>
   {% else %}
-  Mail sent on your email address to reset password!!<br>
-  <a class="button style2" href="/login#banner">Login</a>
+  mail sent on your email address to reset password!!<br>
+  <a class="button style2" href="/login#banner">login</a>
   {% endif %}
   {% else %}
   <header>
-    <h2 id="forgot-header">Forgot Password</h2>
+    <h2 id="forgot-header">forgot password</h2>
   </header>
   <form action="/reset#banner" method="post">
-    <div><input type="password" class="text" name="password" placeholder="Password"></div>
-    <div><input type="password" class="text" name="confirmpassword" placeholder="Confirm Password"></div>
+    <div><input type="password" class="text" name="password" placeholder="password"></div>
+    <div><input type="password" class="text" name="confirmpassword" placeholder="confirm password"></div>
     <div><input type="hidden" value="{{uuid}}" name="uuid" /></div>
-    <input type="submit" class="button style2" value="Change Password" name="changepassword1" />
+    <input type="submit" class="button style2" value="change password" name="changepassword1" />
   </form>
   {% endif %}
   {% endif %}
@@ -145,124 +145,80 @@ alreadyRegistered();
 </section>
 
 {% if not user %}
-<!-- Feature 1 -->
+<!-- feature 1 -->
 <article id="first" class="container box style1 right">
   <a href="#" class="image full">
     <img src="images/pic01.png" alt="" />
   </a>
   <div class="inner">
     <header>
-      <h2>Takes just your<br />
-        Few seconds to set up</h2>
+      <h2>takes just your<br />
+        few seconds to set up</h2>
     </header>
-    <p>Register to CloudMania, Login your Dropbox Account than Simply take your existing HTML website, specify the editable areas then copy it to Dropbox. You now have a live website with a CMS your client use.</p>
+    <p>register to cloudmania, login your dropbox account than simply take your existing html website, specify the editable areas then copy it to dropbox. you now have a live website with a cms your client use.</p>
   </div>
 </article>
 
-		<!-- Feature 2 -->
-			<article class="container box style1 left">
-				<a href="http://ineedchemicalx.deviantart.com/art/Kingdom-of-the-Wind-348268044" class="image full"><img src="images/pic02.jpg" alt="" /></a>
-				<div class="inner">
-					<header>
-						<h2>Features</h2>
-					</header>
-					<p>No programming required<br>
-					Complete Design Freedom<br>
-					Unlimited Scalability<br>
-					Nothing to install or maintain<br>
-					and many more...</p>
-				</div>
-			</article>
-		{% endif %}
-		{% if contact %}
-		<!-- Contact -->
-		<section id="contactus">
-			<article class="container box style3">
-				<header>
-					<h2>Contact us !! </h2>
-					<p>Give your precious feedback below.</p>
-				</header>
-				<form>
-					<div class="row half">
-						<div class="6u"><input type="text" class="text" name="name" placeholder="Name" /></div>
-						<div class="6u"><input type="text" class="text" name="email" placeholder="Email" /></div>
-					</div>
-					<div class="row half">
-						<div class="12u">
-							<textarea name="message" placeholder="Message"></textarea>
-						</div>
-					</div>
-					<div class="row">
-						<div class="12u">
-							<ul class="actions">
-								<li><a href="#" class="button form">Send Message</a></li>
-							</ul>
-						</div>
-					</div>
-				</form>
-			</article>
-		{% endif %}
-
-<!-- Feature 2 -->
+<!-- feature 2 -->
 <article class="container box style1 left">
   <a href="#" class="image full" style="background-color:white">
-    <img src="images/pic02.gif" alt="" />
+    <img src="/images/pic02.gif" alt="" />
   </a>
   <div class="inner">
     <header>
-      <h2>Features</h2>
+      <h2>features</h2>
     </header>
-    <p>No programming required<br>
-    Complete Design Freedom<br>
-    Unlimited Scalability<br>
-    Nothing to install or maintain<br>
+    <p>no programming required<br>
+    complete design freedom<br>
+    unlimited scalability<br>
+    nothing to install or maintain<br>
     and many more...</p>
   </div>
 </article>
 {% endif %}
 
-<!-- Contact -->
-{% if contact %}
+<!-- contact -->
 <section id="contactus">
-<article class="container box style3">
-  <header>
-    <h2>Contact us !! </h2>
-    <p>Give your precious feedback below.</p>
-  </header>
-  <form>
-    <div class="row half">
-      <div class="6u"><input type="text" class="text" name="name" placeholder="Name" /></div>
-      <div class="6u"><input type="text" class="text" name="email" placeholder="Email" /></div>
-    </div>
-    <div class="row half">
-      <div class="12u">
-        <textarea name="message" placeholder="Message"></textarea>
+  <article class="container box style3">
+    <header>
+      <h2>contact us !! </h2>
+      <p>give your precious feedback below.</p>
+    </header>
+    <form action='contact#banner' method='POST'>
+      <div class="row half">
+        <div class="6u"><input type="text" class="text" name="name" placeholder="name" /></div>
+        <div class="6u"><input type="text" class="text" name="email" placeholder="email" /></div>
       </div>
-    </div>
-    <div class="row">
-      <div class="12u">
-        <ul class="actions">
-          <li><a href="#" class="button form">Send Message</a></li>
-        </ul>
+      <div class="row half">
+        <div class="12u">
+          <textarea name="message" placeholder="message"></textarea>
+        </div>
       </div>
-    </div>
-  </form>
-</article>
-{% endif %}
-
+      <div class="row">
+        <div class="12u">
+          <ul class="actions">
+            <li>
+          <input type="submit" style="background:teal" class="button style2" value="Send Message" name="sendmessage" />
+          </li>
+          </ul>
+        </div>
+      </div>
+    </form>
+  </article>
+</section>
 
 <section id="footer">
   <ul class="icons">
-    <li><a href="#" class="fa fa-twitter solo"><span>Twitter</span></a></li>
-    <li><a href="#" class="fa fa-facebook solo"><span>Facebook</span></a></li>
-    <li><a href="#" class="fa fa-google-plus solo"><span>Google+</span></a></li>
-    <li><a href="#" class="fa fa-pinterest solo"><span>Pinterest</span></a></li>
-    <li><a href="#" class="fa fa-dribbble solo"><span>Dribbble</span></a></li>
-    <li><a href="#" class="fa fa-linkedin solo"><span>LinkedIn</span></a></li>
+    <li><a href="#" class="fa fa-twitter solo"><span>twitter</span></a></li>
+    <li><a href="#" class="fa fa-facebook solo"><span>facebook</span></a></li>
+    <li><a href="#" class="fa fa-google-plus solo"><span>google+</span></a></li>
+    <li><a href="#" class="fa fa-pinterest solo"><span>pinterest</span></a></li>
+    <li><a href="#" class="fa fa-dribbble solo"><span>dribbble</span></a></li>
+    <li><a href="#" class="fa fa-linkedin solo"><span>linkedin</span></a></li>
   </ul>
   <div class="copyright">
     <ul class="menu">
-      <li>&copy; CloudMania. All rights reserved.</li>
+      <li>&copy; cloudmania. all rights reserved.</li>
     </ul>
   </div>
 </section>

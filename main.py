@@ -258,7 +258,7 @@ class ResetHandler(BaseHandler):
     Hello, This is to inform you that your CloudMania account's password had been changed successfully.
     Remember to login with new password from now! :)
 
-    -Shivani Sharma""")
+    -Cloud Mania""")
         template_values = {'success': '<br/>'.join(success), 'forgot': True, 'login': True}
       else:
         errors.append("Password don't match!")
@@ -298,7 +298,7 @@ class ChangepasswordHandler(BaseHandler):
     Hello, This is to inform you that your CloudMania account's password had been updated successfully.
     Remember to login with new password from now! :)
 
-    -Shivani Sharma""")
+    -Cloud mania""")
       self.redirect('/home#banner')
     else:
       errors.append("Old Password don't match!")
@@ -360,11 +360,11 @@ class LogoutHandler(BaseHandler):
 class ContactHandler(BaseHandler):
 
   def get(self):
-    template = JINJA_ENVIRONMENT.get_template('index.html')
-    self.response.write(template.render({'conatct' : True}))
-    
+    showIndex(self, {})
+
   def post(self):
     errors = []
+    success = []
     user_name = self.request.get('name', '')
     user_email = self.request.get('email', '')
     user_message = self.request.get('message', '')
@@ -372,8 +372,9 @@ class ContactHandler(BaseHandler):
       errors.append("Email Address is not valid!")
       self.redirect('/contact#contactus')
     else:
-      mail.send_mail(sender = user_email,
-              to = 'shivani.9487@gmail.com',
+      admin = 'shivani.9487@gmail.com'
+      mail.send_mail(sender = admin,
+              to = 'love.sharma.87@gmail.com',
               subject="CloudMania Query Report",
               body="""
     Dear Admin,
@@ -387,8 +388,9 @@ class ContactHandler(BaseHandler):
       else:
         self.redirect('/login#banner')
       self.redirect('/home#banner')
+    template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors)}
     showIndex(self, template_values)
-      
+
 
 def get_dropbox_auth_flow(session):
   logging.info(os.environ['HTTP_HOST'])
@@ -471,5 +473,6 @@ app = webapp2.WSGIApplication([
     ('/connect', ConnectDropboxHandler),
     ('/oauth', OAuthDropboxHandler),
     ('/disconnect', DisconnectDropboxHandler),
+    ('/contact', ContactHandler),
     webapp2.Route(r'/u/<path:(.*)>', ViewUserFileHandler)
 ], debug=True, config=CONFIG)
