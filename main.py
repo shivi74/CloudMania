@@ -327,7 +327,7 @@ class AddsiteHandler(BaseHandler):
       showIndex(self, template_values)
       return
     idobj = database.Mapping.all()
-    idobj.filter("siteID =", user_siteID)
+    idobj.filter("SiteID =", user_siteID)
     counter = idobj.count(limit=1)
     if (counter == 0):
       success.append("URL registered!")
