@@ -196,7 +196,7 @@ class ForgotHandler(BaseHandler):
 
   def get(self):
     user_obj = self.session.get('user')
-    if (user):
+    if (user_obj):
       self.redirect('/home#banner')
     template = JINJA_ENVIRONMENT.get_template('index.html')
     self.response.write(template.render({'forgot': True}))
