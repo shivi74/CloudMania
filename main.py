@@ -381,6 +381,12 @@ class ContactHandler(BaseHandler):
     Name = %s,/n
     Email = %s,/n
     Message = %s/n"""% (user_name, user_email, user_message))
+      success.append("Email sent!")
+      if (user_obj):
+        self.redirect('/home#banner')
+      else:
+        self.redirect('/login#banner')
+      self.redirect('/home#banner')
     showIndex(self, template_values)
       
 
