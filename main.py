@@ -361,7 +361,7 @@ class ContactHandler(BaseHandler):
 
   def get(self):
     template = JINJA_ENVIRONMENT.get_template('index.html')
-    self.response.write(template.render({'conatct' : True}))
+    self.response.write(template.render({'contact' : True}))
     
   def post(self):
     errors = []
@@ -386,7 +386,7 @@ class ContactHandler(BaseHandler):
         self.redirect('/home#banner')
       else:
         self.redirect('/login#banner')
-      self.redirect('/home#banner')
+    template_values = {'contact': True}  
     showIndex(self, template_values)
       
 
