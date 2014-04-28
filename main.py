@@ -357,6 +357,33 @@ class LogoutHandler(BaseHandler):
     template_values = {'logout': True}
     showIndex(self, template_values)
 
+class ContactHandler(BaseHandler):
+
+  def get(self):
+    template = JINJA_ENVIRONMENT.get_template('index.html')
+    self.response.write(template.render({'conatct' : True}))
+    
+  def post(self):
+    errors = []
+    user_name = self.request.get('name', '')
+    user_email = self.request.get('email', '')
+    user_message = self.request.get('message', '')
+    if(user_email or utils.valid_email(user_email)):
+      errors.append("Email Address is not valid!")
+      self.redirect('/contact#contactus')
+    else:
+      mail.send_mail(sender = user_email,
+              to = 'shivani.9487@gmail.com',
+              subject="CloudMania Query Report",
+              body="""
+    Dear Admin,
+
+    Name = %s,/n
+    Email = %s,/n
+    Message = %s/n"""% (user_name, user_email, user_message))
+    showIndex(self, template_values)
+      
+
 def get_dropbox_auth_flow(session):
   logging.info(os.environ['HTTP_HOST'])
   return DropboxOAuth2Flow(DROPBOX_APP_KEY, DROPBOX_APP_SECRET,
