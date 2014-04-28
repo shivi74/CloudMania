@@ -77,18 +77,14 @@ class RegisterHandler(BaseHandler):
     template = JINJA_ENVIRONMENT.get_template('index.html')
 
   def post(self):
-    logging.info(self.request)
     user_email = self.request.get('email','')
-    logging.info(utils.valid_email(user_email))
     user_password = self.request.get('password')
     user_cpassword = self.request.get('confirmpassword')
     q = database.Query(database.User)
     q.filter("email =", user_email)
     total = q.count()
-    logging.info(total)
     if ((user_email and utils.valid_email(user_email)) and (user_password == user_cpassword) and total == 0):
       user_uuid = str(uuid.uuid1())
-      logging.info(user_uuid)
       user_obj = database.User(key_name = user_email, email = user_email, password = base64.b64encode(user_password), is_verify = False)
       user_obj.put()
       database.Verify(user=user_obj, uuid=user_uuid).put()
@@ -112,7 +108,6 @@ class RegisterHandler(BaseHandler):
         errors.append("Email Address is not valid!")
       if(user_password != user_cpassword):
       	errors.append("Password and Confirm password doesn't match!")
-      logging.info(errors)
     template_values = {"errors": "<br/>".join(errors)}
     showIndex(self, template_values)
 
@@ -120,7 +115,6 @@ class VerifyHandler(BaseHandler):
 
   def get(self):
     errors = []
-    logging.info(self.request)
     user = self.session.get('User')
     user_uuidg = self.request.get('uuid')
     verify_all = database.Verify.all()
@@ -149,7 +143,6 @@ class LoginHandler(BaseHandler):
     self.response.write(template.render({'login': True}))
 
   def post(self):
-    logging.info(self.request)
     user_email = self.request.get('email', '')
     is_valid = utils.valid_email(user_email)
     errors = []
@@ -206,7 +199,6 @@ class ForgotHandler(BaseHandler):
 
   def post(self):
     errors = []
-    logging.info(self.request)
     user_email = self.request.get('email')
     is_valid = utils.valid_email(user_email)
     user_all = database.User.all().filter("email =", user_email)
@@ -219,7 +211,6 @@ class ForgotHandler(BaseHandler):
       template_values = {'errors': '<br/>'.join(errors), 'forgot': True}
     else:
       user_uuid = str(uuid.uuid1())
-      logging.info(user_uuid)
       database.Forgot(user=user_all.get(), uuid=user_uuid).put()
       mail.send_mail(sender='shivani.9487@gmail.com',
               to = user_email,
@@ -237,7 +228,6 @@ class ForgotHandler(BaseHandler):
 class ResetHandler(BaseHandler):
 
   def get(self):
-    logging.info(self.request)
     user_uuidg = self.request.get('uuid')
     template = JINJA_ENVIRONMENT.get_template('index.html')
     self.response.write(template.render({'forgot': True, 'reset': True, "uuid": user_uuidg}))
@@ -248,7 +238,6 @@ class ResetHandler(BaseHandler):
     user_uuidg = self.request.get('uuid')
     user_password = self.request.get('password','')
     user_cpassword = self.request.get('confirmpassword','')
-    logging.info(user_uuidg)
     reset_all = database.Forgot.all().filter("uuid =", user_uuidg)
     counter = reset_all.count(limit=1)
     if (counter == 0):
@@ -288,7 +277,6 @@ class ChangepasswordHandler(BaseHandler):
     self.response.write(template.render({'user': user_obj, 'changepassword': True}))
 
   def post(self):
-    logging.info(self.request)
     user_obj = self.session.get('user')
     errors = []
     success = []
@@ -327,7 +315,6 @@ class AddsiteHandler(BaseHandler):
     self.response.write(template.render({'user': user_obj, 'addsite': True}))
 
   def post(self):
-    logging.info(self.request)
     user_email = self.session.get('user')
     user_obj = getUser(user_email)
     errors = []
@@ -347,7 +334,6 @@ class AddsiteHandler(BaseHandler):
       database.Mapping(Sitename = user_sitename, SiteID = user_siteID, user=user_obj).put()
       client = DropboxClient(user_obj.access_token)
       response = client.put_file('%s/index.html' % user_siteID, '<h1>Hello World</h1>')
-      logging.info(response)
       template_values = {'success': '<br/>'.join(success), 'user' : True}
       self.redirect('/home#banner')
     else:
@@ -362,13 +348,12 @@ class LogoutHandler(BaseHandler):
     self.post()
 
   def post(self):
-    logging.info(self.request)
     self.session["user"] = None
     user = users.get_current_user()
     if user:
       users.create_logout_url(self.request.uri)
     else:
-      self.redirect('/login')
+      self.redirect('/login#banner')
     template_values = {'logout': True}
     showIndex(self, template_values)
 
@@ -397,7 +382,6 @@ class DisconnectDropboxHandler(BaseHandler):
 class OAuthDropboxHandler(BaseHandler):
   def get(self):
     user_email = self.session.get('user')
-    logging.info(self.request)
     request_obj = {'state': self.request.get('state'),
                    'code': self.request.get('code')}
     try:
@@ -418,9 +402,8 @@ class OAuthDropboxHandler(BaseHandler):
     except DropboxOAuth2Flow.ProviderException, e:
         logging.info("Auth error" + e)
         logging.info(403)
-    logging.info(access_token)
-    logging.info(user_id)
-    logging.info(url_state)
+    logging.info('Access Token: %s', access_token)
+    logging.info('User_ID: %s', user_id)
     user_obj = getUser(user_email)
     user_obj.access_token = access_token
     user_obj.put()
@@ -433,10 +416,7 @@ class ViewUserFileHandler(BaseHandler):
     siteID = path[:path.index('/')]
     mapping_obj = database.Mapping.all().filter('SiteID =', siteID)
     mapping_obj = mapping_obj.get()
-    logging.info(mapping_obj)
-    logging.info(path)
     client = DropboxClient(mapping_obj.user.access_token)
-    logging.info(client.get_file(path))
     content = 'no'
     f = client.get_file(path)
     content = f.read()
