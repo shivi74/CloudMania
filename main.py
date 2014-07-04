@@ -23,7 +23,6 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
-# Fill these in!
 DROPBOX_APP_KEY = '0unq5cr7ppla7l7'
 DROPBOX_APP_SECRET = 'ogwjvdsflccndjl'
 
@@ -35,6 +34,7 @@ def showIndex(handler, values):
   handler.response.out.write(template.render(values))
 
 def getUser(email):
+  logging.info(email)
   users = database.User.all()
   users.filter('email =', email)
   return users.get() if users.count(limit=1) else None
@@ -122,7 +122,7 @@ class VerifyHandler(BaseHandler):
     counter = verify_all.count(limit=1)
     if (counter == 0):
       if (user):
-        self.redirect('/home')
+        self.redirect('/home#banner')
       else:
         errors.append("User not registered!")
     else:
@@ -132,8 +132,7 @@ class VerifyHandler(BaseHandler):
       verify_record.user.put()
       verify_record.delete()
       success.append("Verification Successfull!")
-      self.redirect('/login#banner')
-    template_values = {"success": '<br/>'.join(success), "errors": "<br/>".join(errors)}
+    template_values = {"success": '<br/>'.join(success), "errors": "<br/>".join(errors), 'login': True}
     showIndex(self, template_values)
 
 class LoginHandler(BaseHandler):
@@ -148,10 +147,8 @@ class LoginHandler(BaseHandler):
     errors = []
     if (is_valid):
       user_password = self.request.get('password', '')
-      q = database.User.all()
-      q.filter("email =", user_email)
-      user_obj = q.get()
-      if (base64.b64encode(user_password) == user_obj.password):
+      user_obj = getUser(user_email)
+      if (user_obj and base64.b64encode(user_password) == user_obj.password):
         template_values = {'login': True, 'user': user_obj.email}
         if(base64.b64encode(user_password) == user_obj.password):
           self.session['user'] = user_email
@@ -277,17 +274,17 @@ class ChangepasswordHandler(BaseHandler):
     self.response.write(template.render({'user': user_obj, 'changepassword': True}))
 
   def post(self):
-    user_obj = self.session.get('user')
+    user_email = self.session.get('user')
     errors = []
     success = []
     user_password = self.request.get('password', '')
-    change_obj = getUser(user_obj)
-    if (change_obj.password == base64.b64encode(user_password)):
+    user_obj = getUser(user_email)
+    if (user_obj.password == base64.b64encode(user_password)):
       user_npassword = self.request.get('newpassword', '')
       user_cpassword = self.request.get('confirmpassword', '')
       if ((user_npassword == user_cpassword) and (user_npassword and user_cpassword)):
-        change_obj.password = base64.b64encode(user_npassword)
-        change_obj.put()
+        user_obj.password = base64.b64encode(user_npassword)
+        user_obj.put()
         success.append("Password changed !")
         mail.send_mail(sender='shivani.9487@gmail.com',
               to = user_email,
@@ -298,12 +295,12 @@ class ChangepasswordHandler(BaseHandler):
     Hello, This is to inform you that your CloudMania account's password had been updated successfully.
     Remember to login with new password from now! :)
 
-    -Cloud mania""")
+    - Cloud mania""")
       self.redirect('/home#banner')
     else:
       errors.append("Old Password don't match!")
       #self.redirect('/changepassword')
-    template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user' : True}
+    template_values = {'success': '<br/>'.join(success), 'errors': '<br/>'.join(errors), 'user' : user_obj}
     showIndex(self, template_values)
 
 class AddsiteHandler(BaseHandler):
@@ -319,8 +316,10 @@ class AddsiteHandler(BaseHandler):
     user_obj = getUser(user_email)
     errors = []
     success = []
+
     user_sitename = self.request.get('Sitename', '')
     user_siteID = self.request.get('SiteID', '')
+
     if( user_siteID == "" ):
       errors.append("Don't forget to give siteID!")
       template_values = {'errors': '<br/>'.join(errors),'user': user_obj, 'addsite' : True}
@@ -453,6 +452,9 @@ class ViewUserFileHandler(BaseHandler):
     siteID = path[:path.index('/')]
     mapping_obj = database.Mapping.all().filter('SiteID =', siteID)
     mapping_obj = mapping_obj.get()
+    if not mapping_obj:
+      self.redirect('/#banner')
+      return
     client = DropboxClient(mapping_obj.user.access_token)
     content = 'no'
     f = client.get_file(path)

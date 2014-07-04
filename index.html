@@ -26,123 +26,125 @@ free for personal and commercial use under the cca 3.0 license (html5up.net/lice
     </head>
     <body>
 
-        <!-- header -->
-        <section id="header">
-            <header>
-                <h1>cloud mania</h1>
-                <p>eaisest way to create website ever.</p>
-            </header>
-            <footer>
-                <a href="#banner" class="button style2 scrolly scrolly-centered">try it now</a>
-            </footer>
+
+<!-- header -->
+<section id="header">
+  <header>
+    <h1>Cloud Mania</h1>
+    <p>Easiest way to host website ever.</p>
+  </header>
+  <footer>
+    <a href="#banner" class="button style2 scrolly scrolly-centered">Try it now</a>
+  </footer>
+</section>
+
+<!-- banner -->
+<section id="banner">
+  {% if success %}
+  {{ success }}
+  {% endif %}
+  {% if errors %}
+  {{ errors|safe }}
+  {% endif %}
+  {% if not forgot %}
+  {% if not user %}
+  <header>
+    <h2 id="register-header">Don't have an account? Sign up below</h2>
+  </header>
+  {% endif %}
+  {% if not user %}
+  <form action="/register#banner" method="post">
+    <div><input type="text" class="text" name="email" placeholder="Email"></div>
+    <div><input type="password" class="text" name="password" placeholder="Password"></div>
+    <div><input type="password" class="text" name="confirmpassword" placeholder="Confirm password"></div>
+    <input type="submit" class="button style2" value="Register" name="register" />
+    <input type="button" class="button style2" value="Already Registered?" name="login" />
+    <div><a href="/forgot#banner">Forgot password?</a></div>
+  </form>
+  {% else %}
+  {% if not changepassword and not addsite %}
+  <h2>Welcome, {{user.email}}</h2>
+  <br>
+  {% if sites and is_connected %}
+  <div>
+    <h2>List of sites:</h2><ol>
+      {% for sitename, siteid in sites %}
+      <li>{{sitename}} - <a target="_blank" href="/u/{{siteid}}/index.html">{{siteid}}</a></li>
+      {% endfor %}
+    </ol>
+  </div>
+  {% endif %}
+  {% if is_connected %}
+  <a class="button style2" href="/addsite#banner">Add site</a>
+  {% endif %}
+  <a class="button style2" href="/changepassword#banner">Change Password</a>
+  {% if not is_connected %}
+  <a class="button style2" href="/connect">Connect Dropbox</a>
+  {% else %}
+  <a class="button style2" href="/disconnect">Disconnect Dropbox</a>
+  {% endif %}
+  {% endif %}
+  {% if changepassword %}
+  <header>
+    <h2 id="changepassword-header">Change Password</h2>
+  </header>
+  <form action="/changepassword#banner" method="post">
+    <div><input type="password" class="text" name="password" placeholder="Password"></div>
+    <div><input type="password" class="text" name="newpassword" placeholder="New Password"></div>
+    <div><input type="password" class="text" name="confirmpassword" placeholder="Confirm Password"></div>
+    <input type="submit" class="button style2" value="Change Password" name="change_password" />
+  </form>
+  {% endif %}
+
+  {% if addsite %}
+  <header>
+    <h2 id="addsite-header">Add Site</h2>
+  </header>
+  <form action="/addsite#banner" method="post">
+    <div><input type="text" class="text" name="sitename" placeholder="Site name"></div>
+    http://cloud-mania.appspot.com/u/
+    <div><input type="text" class="text" name="siteid" placeholder="Site id"></div>
+    <input type="submit" class="button style2" value="Add site" name="addsite" />
+  </form>
+
+  {% endif %}
+  <br>
+  <a href="/logout">Logout</a>
+  {% endif %}
+  {% if login %}
+  <script>
+alreadyRegistered();
+  </script>
+  {% endif %}
+  {% else %}
+  {% if not reset %}
+  {% if not message %}
+  <header>
+    <h2 id="forgot-header">Forgot Password</h2>
+  </header>
+  <form action="/forgot#banner" method="post">
+    <div><input type="text" class="text" name="email" placeholder="Email"></div>
+    <input type="submit" class="button style2" value="Reset password" name="reset" />
+  </form>
+  {% else %}
+  Mail sent on your email address to reset password!!<br>
+  <a class="button style2" href="/login#banner">Login</a>
+  {% endif %}
+  {% else %}
+  <header>
+    <h2 id="forgot-header">Forgot Password</h2>
+  </header>
+  <form action="/reset#banner" method="post">
+    <div><input type="password" class="text" name="password" placeholder="Password"></div>
+    <div><input type="password" class="text" name="confirmpassword" placeholder="Confirm password"></div>
+    <div><input type="hidden" value="{{uuid}}" name="uuid" /></div>
+    <input type="submit" class="button style2" value="Change Password" name="changepassword1" />
+  </form>
+  {% endif %}
+  {% endif %}
+
         </section>
 
-        <!-- banner -->
-        <section id="banner">
-            {% if success %}
-            {{ success }}
-            {% endif %}
-            {% if errors %}
-            {{ errors|safe }}
-            {% endif %}
-            {% if not forgot %}
-            {% if not user %}
-            <header>
-                <h2 id="register-header">don't have an account? sign up below</h2>
-            </header>
-            {% endif %}
-            {% if not user %}
-            <form action="/register#banner" method="post">
-                <div><input type="text" class="text" name="email" placeholder="email"></div>
-                <div><input type="password" class="text" name="password" placeholder="password"></div>
-                <div><input type="password" class="text" name="confirmpassword" placeholder="confirm password"></div>
-                <input type="submit" class="button style2" value="register" name="register" />
-                <input type="button" class="button style2" value="already registered?" name="login" />
-                <div><a href="/forgot">forgot password?</a></div>
-            </form>
-            {% else %}
-            {% if not changepassword and not addsite %}
-            <h2>welcome, {{user.email}}</h2>
-            <br>
-            {% if sites and is_connected %}
-            <div>
-                <h2>list of sites:</h2><ol>
-                {% for sitename, siteid in sites %}
-                <li>{{sitename}} - <a target="_blank" href="/u/{{siteid}}/index.html">{{siteid}}</a></li>
-                {% endfor %}
-                </ol>
-            </div>
-            {% endif %}
-            {% if is_connected %}
-            <a class="button style2" href="/addsite#banner">add site</a>
-            {% endif %}
-            <a class="button style2" href="/changepassword#banner">change password</a>
-            {% if not is_connected %}
-            <a class="button style2" href="/connect">connect dropbox</a>
-            {% else %}
-            <a class="button style2" href="/disconnect">disconnect dropbox</a>
-            {% endif %}
-            {% endif %}
-            {% if changepassword %}
-            <header>
-                <h2 id="changepassword-header">change password</h2>
-            </header>
-            <form action="/changepassword#banner" method="post">
-                <div><input type="password" class="text" name="password" placeholder="password"></div>
-                <div><input type="password" class="text" name="newpassword" placeholder="new password"></div>
-                <div><input type="password" class="text" name="confirmpassword" placeholder="confirm password"></div>
-                <input type="submit" class="button style2" value="change password" name="change_password" />
-            </form>
-            {% endif %}
-
-            {% if addsite %}
-            <header>
-                <h2 id="addsite-header">add site</h2>
-            </header>
-            <form action="/addsite#banner" method="post">
-                <div><input type="text" class="text" name="sitename" placeholder="site name"></div>
-                http://cloud-mania.appspot.com/u/
-                <div><input type="text" class="text" name="siteid" placeholder="site id"></div>
-                <input type="submit" class="button style2" value="add site" name="addsite" />
-            </form>
-
-            {% endif %}
-            <br>
-            <a href="/logout">logout</a>
-            {% endif %}
-            {% if login %}
-            <script>
-                alreadyregistered();
-            </script>
-            {% endif %}
-            {% else %}
-            {% if not reset %}
-            {% if not message %}
-            <header>
-                <h2 id="forgot-header">forgot password</h2>
-            </header>
-            <form action="/forgot#banner" method="post">
-                <div><input type="text" class="text" name="email" placeholder="email"></div>
-                <input type="submit" class="button style2" value="reset password" name="reset" />
-            </form>
-            {% else %}
-            mail sent on your email address to reset password!!<br>
-            <a class="button style2" href="/login#banner">login</a>
-            {% endif %}
-            {% else %}
-            <header>
-                <h2 id="forgot-header">forgot password</h2>
-            </header>
-            <form action="/reset#banner" method="post">
-                <div><input type="password" class="text" name="password" placeholder="password"></div>
-                <div><input type="password" class="text" name="confirmpassword" placeholder="confirm password"></div>
-                <div><input type="hidden" value="{{uuid}}" name="uuid" /></div>
-                <input type="submit" class="button style2" value="change password" name="changepassword1" />
-            </form>
-            {% endif %}
-            {% endif %}
-
-        </section>
 
         {% if not user %}
         <!-- feature 1 -->
@@ -206,6 +208,72 @@ free for personal and commercial use under the cca 3.0 license (html5up.net/lice
                 </form>
             </article>
         </section>
+
+{% if not user %}
+<!-- feature 1 -->
+<article id="first" class="container box style1 right">
+  <a href="#" class="image full">
+    <img src="images/pic01.png" alt="" />
+  </a>
+  <div class="inner">
+    <header>
+      <h2>- Takes just your<br />
+        - Few seconds to set up</h2>
+    </header>
+    <p>Register to cloudmania, Login your dropbox account
+    than simply take your existing html website,
+    specify the editable areas then copy it to dropbox.
+    You now have a live website with a cms your client use.</p>
+  </div>
+</article>
+
+<!-- feature 2 -->
+<article class="container box style1 left">
+  <a href="#" class="image full" style="background-color:white">
+    <img src="/images/pic02.gif" alt="" />
+  </a>
+  <div class="inner">
+    <header>
+      <h2>features</h2>
+    </header>
+    <p> - No programming required<br>
+    - Complete design freedom<br>
+    - Unlimited scalability<br>
+    - Nothing to install or maintain<br>
+    and many more...</p>
+  </div>
+</article>
+{% endif %}
+
+<!-- contact -->
+<section id="contactus">
+  <article class="container box style3">
+    <header>
+      <h2>Contact us !! </h2>
+      <p>Give your precious feedback below.</p>
+    </header>
+    <form action='contact#banner' method='POST'>
+      <div class="row half">
+        <div class="6u"><input type="text" class="text" name="name" placeholder="Name" /></div>
+        <div class="6u"><input type="text" class="text" name="email" placeholder="Email" /></div>
+      </div>
+      <div class="row half">
+        <div class="12u">
+          <textarea name="message" placeholder="Message"></textarea>
+        </div>
+      </div>
+      <div class="row">
+        <div class="12u">
+          <ul class="actions">
+            <li>
+          <input type="submit" style="background:teal" class="button style2" value="Send Message" name="sendmessage" />
+          </li>
+          </ul>
+        </div>
+      </div>
+    </form>
+  </article>
+</section>
 
         <section id="footer">
             <ul class="icons">
